@@ -1,8 +1,9 @@
 package core.inputs;
 
-import core.Window;
-import core.utils.Constants;
+import core.engine.Window;
 
+import static core.utils.SETTINGS.WIN_HEIGHT;
+import static core.utils.SETTINGS.WIN_WIDTH;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseListener {
@@ -32,7 +33,6 @@ public class MouseListener {
     }
 
     public static void mousePosCallback(long window, double xpos, double ypos){
-//        glfwSetCursorPos(Window.getWindow(), Constants.WIN_WIDTH/2f, Constants.WIN_HEIGHT/2f);
         get().lastX = get().xPos;
         get().lastY = get().yPos;
         get().xPos = xpos;

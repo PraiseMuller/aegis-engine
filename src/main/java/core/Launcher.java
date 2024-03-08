@@ -1,11 +1,10 @@
 package core;
 
-import core.scenes.Scene_001;
+import core.engine.Window;
 
 public class Launcher {
-    public static void main(String args[]){
+    public static void main(String[] args){
        Window windowInstance = Window.get();
-       windowInstance.changeScene(new Scene_001());
        windowInstance.run();
     }
 }

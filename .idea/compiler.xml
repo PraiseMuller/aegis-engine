@@ -6,9 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="OPEN-GL-001" />
-        <module name="OPEN-GL-003" />
+        <module name="Breakout" />
+        <module name="AEGIS Engine" />
         <module name="JADE_ENGINE" />
+        <module name="OPEN-GL-001" />
+        <module name="The Game Of Life" />
+        <module name="OPEN-GL-003" />
       </profile>
     </annotationProcessing>
   </component>
