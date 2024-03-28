@@ -22,7 +22,7 @@ public class JoystickListener {
         return JoystickListener.instance;
     }
 
-    public FloatBuffer getJoysticAxes(){
+    public FloatBuffer getJoystickAxes(){
         joysticAxes = glfwGetJoystickAxes(GLFW_JOYSTICK_1);
         return joysticAxes;
     }

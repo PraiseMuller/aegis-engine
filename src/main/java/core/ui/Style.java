@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Style {
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
 
     public Style() {
         this.properties = new HashMap<>();

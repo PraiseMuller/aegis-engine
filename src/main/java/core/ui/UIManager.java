@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UIManager {
-    private List<UIContainer> containers;
+    private final List<UIContainer> containers;
 
     public UIManager() {
         this.containers = new ArrayList<>();

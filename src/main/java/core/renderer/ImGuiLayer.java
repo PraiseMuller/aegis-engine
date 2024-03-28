@@ -1,5 +1,6 @@
 package core.renderer;
 
+import core.engine.Camera;
 import core.engine.Scene;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
@@ -183,7 +184,7 @@ public class ImGuiLayer {
         // Method initializes LWJGL3 renderer.
         // This method SHOULD be called after you've initialized your ImGui configuration (fonts and so on).
         // ImGui context should be created as well.
-        imGuiGl3.init("#version 330 core");
+        imGuiGl3.init("#version 440 core");
     }
 
     // Main application loop
@@ -196,8 +197,9 @@ public class ImGuiLayer {
             ImGui.text("FPS: " + 1/dt +"\n");
             if(StateMachine.play()) ImGui.text("State: Running\n");
             else ImGui.text("State: Stopped\n");
-
-            ImGui.text("Qauds: " + Scene.pCount * 10);
+            ImGui.text("Quads: " + Scene.pCount);
+            ImGui.text("Camera Position: " + Camera.getPosition());
+            ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
 
         ImGui.render();
 

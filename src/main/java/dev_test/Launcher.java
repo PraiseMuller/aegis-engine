@@ -1,4 +1,4 @@
-package core;
+package dev_test;
 
 import core.engine.Window;
 

@@ -1,9 +1,11 @@
 package core.engine;
 
+import core.entities.Player;
 import core.inputs.Input;
 import core.renderer.Renderer;
 import org.joml.Math;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,46 +13,48 @@ import java.util.List;
 import static core.utils.SETTINGS.WIN_HEIGHT;
 import static core.utils.SETTINGS.WIN_WIDTH;
 
-public class Scene {
+public class Scene implements IGameLogic {
     public static int pCount = 0;   // number of particle objects
-    private final float pSize = 15.0f;
     private final List<Particle> particles = new ArrayList<>();
-    private Renderer renderer;
+    private Renderer sceneRenderer;
+    private Player player;
 
     public Scene(){
+        this.init();
+    }
+
+    @Override
+    public void init(){
         Camera.init();
         this.loadParticles();
+        this.player = new Player(new Vector3f(WIN_WIDTH / 2f, WIN_HEIGHT / 2f, 0));
     }
 
     public void loadParticles(){
         for(int i = 0; i < pCount; i++){
-            this.particles.add(new Particle(new Vector2f((float) Math.random() * WIN_WIDTH, (float) Math.random() * WIN_HEIGHT), pSize));
+            this.particles.add(new Particle(  new Vector2f((float) Math.random() * 2 * WIN_WIDTH, 0)));
         }
 
-        this.renderer = new Renderer(this.particles);
+        this.sceneRenderer = new Renderer(this.particles);
     }
 
+    @Override
     public void updateInputs(float dt){
         Input.update(dt, this);
-
-        //update if clicked, add particles
-        //if(Input.isDragging()){
-            Vector2f pos = Input.getMousePosition();
-
-            int SELECTION_SIZE = 1;
-            for(int i = -SELECTION_SIZE; i < SELECTION_SIZE; i++){
-                for(int j = -SELECTION_SIZE; j < SELECTION_SIZE; j++) {
-
-                    Particle particle = new Particle(pos, pSize);
-                    this.particles.add(particle);
-                    this.renderer.addVertex(particle);
-                    pCount++;
-                }
-            }
-        //}
+        Camera.smoothFollow(player.getPosition());
     }
 
+    @Override
     public void update(float dt){
+
+        //update if clicked, add particles
+        if(StateMachine.play()){// && Input.isDragging()){
+            Particle particle = new Particle(  new Vector2f((float) Math.random() * 2 * WIN_WIDTH, 0) );
+            this.particles.add(particle);
+            this.sceneRenderer.addVertex(particle);
+            pCount++;
+        }
+
         //THE LOGIC
         for(int i = 0; i < this.particles.size(); i++) {
 
@@ -59,19 +63,25 @@ public class Scene {
 
             if(particle.getLifetime() <= 0){
                 this.particles.remove(particle);
-                this.renderer.removeVertex(particle, i);
+                this.sceneRenderer.removeVertex(particle, i);
                 pCount--;
             }
             else
-                this.renderer.updateVertex(particle, i);
+                this.sceneRenderer.updateVertex(particle, i);
         }
     }
-
+    @Override
     public void render(float dt){
-        this.renderer.render(dt, this);
+        this.sceneRenderer.render(this, dt);
     }
 
+    @Override
     public void dispose(){
-        this.renderer.dispose();
+        this.sceneRenderer.dispose();
+        this.player.dispose();
+    }
+
+    public Player getPlayer(){
+        return this.player;
     }
 }

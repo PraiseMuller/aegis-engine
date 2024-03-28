@@ -1,13 +1,27 @@
 package core.engine;
 
+import core.renderer.ShaderProgram;
+import core.utils.AssetPool;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class BatchManager {
     private final List<DoubleBufferedBatch> batches;
+    private final ShaderProgram shaderProgram;
 
     public BatchManager(){
         this.batches = new ArrayList<>();
+
+        this.shaderProgram = new ShaderProgram();
+        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/defaults/vertex.glsl"));
+        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/defaults/fragment.glsl"));
+        this.shaderProgram.link();
+
+        this.shaderProgram.bind();
+        this.shaderProgram.createUniform("projectionMatrix");
+        this.shaderProgram.createUniform("viewMatrix");
+        this.shaderProgram.unbind();
     }
 
     public void addVertex(Particle particle){
@@ -37,14 +51,22 @@ public class BatchManager {
     }
 
     public void render(){
+        this.shaderProgram.bind();
+        this.shaderProgram.uploadMat4fUniform("projectionMatrix", Camera.projectionMatrix());
+        this.shaderProgram.uploadMat4fUniform("viewMatrix", Camera.viewMatrix());
+
         for(DoubleBufferedBatch batch : batches){
             batch.render();
         }
+
+        this.shaderProgram.unbind();
     }
 
     public void dispose(){
         for(DoubleBufferedBatch batch : batches){
             batch.dispose();
         }
+
+        this.shaderProgram.dispose();
     }
 }

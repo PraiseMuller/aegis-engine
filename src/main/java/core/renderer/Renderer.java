@@ -1,63 +1,65 @@
 package core.renderer;
 
 import core.engine.*;
-import core.utils.AssetPool;
+import core.postprocess.FrameBuffer;
+import core.postprocess.Quad;
 
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class Renderer {
     private final ImGuiLayer imGuiLayer;
-    private final ShaderProgram shaderProgram;
-    private final BatchManager batchManager;
+    //private final BatchManager batchManager;
+    private final Quad bwTestQuad;
 
     public Renderer(List<Particle> particles){
         this.imGuiLayer = new ImGuiLayer(Window.getWindow());
         this.imGuiLayer.initImGui();
 
-        this.batchManager = new BatchManager();
-        for(Particle particle : particles){
-            this.addVertex(particle);
-        }
-
-        this.shaderProgram = new ShaderProgram();
-        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/vertex.glsl"));
-        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/fragment.glsl"));
-        this.shaderProgram.link();
-
-        this.shaderProgram.bind();
-        this.shaderProgram.createUniform("projectionMatrix");
-        this.shaderProgram.createUniform("viewMatrix");
-        this.shaderProgram.unbind();
+//        this.batchManager = new BatchManager();
+//        for(Particle particle : particles){
+//            this.addVertex(particle);
+//        }
+//
+        this.bwTestQuad = new Quad();
     }
 
     public void addVertex(Particle particle){
-        this.batchManager.addVertex(particle);
+        //this.batchManager.addVertex(particle);
     }
 
     public void updateVertex(Particle particle, int index){
-        this.batchManager.updateVertex(particle, index);
+        //this.batchManager.updateVertex(particle, index);
     }
 
     public void removeVertex(Particle particle, int index){
-        this.batchManager.removeVertex(particle, index);
+        //this.batchManager.removeVertex(particle, index);
     }
 
-    public void render(float dt, Scene scene){
-        this.shaderProgram.bind();
-        this.shaderProgram.uploadMat4fUniform("projectionMatrix", Camera.projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("viewMatrix", Camera.viewMatrix());
+    public void render(Scene scene, float dt){
+        //  1-ST PASS
+        //this.bwFramebuffer.bind();
+        glClearColor(0.23f, 0.18f, 0.33f,  1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        this.batchManager.render();
+        //this.batchManager.render();
+        scene.getPlayer().render();
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-        this.shaderProgram.unbind();
+        //  2-ND PASS
+        //this.bwFramebuffer.unbind();
+        //glClearColor(0.23f, 0.18f, 0.33f,  1);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         imGuiLayer.update(dt, scene);
+        this.bwTestQuad.render();
+        //////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     public void dispose(){
         this.imGuiLayer.destroyImGui();
-        this.shaderProgram.unbind();
-        this.shaderProgram.dispose();
-        this.batchManager.dispose();
+        //this.batchManager.dispose();
+        this.bwTestQuad.dispose();
     }
 }

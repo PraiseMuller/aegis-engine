@@ -52,20 +52,22 @@ public class ShaderProgram {
             throw new RuntimeException("Shader linking failed: \n" + glGetProgramInfoLog(this.shaderProgramId, length));
         }
 
-        if (this.vertexShaderId != 0) {
-            glDetachShader(this.shaderProgramId, this.vertexShaderId);
-        }
+        //Detach and delete fragment shader and vertex shader binaries
+        glDetachShader(this.shaderProgramId, this.vertexShaderId);
+        glDeleteShader(this.vertexShaderId);
 
-        if (this.fragmentShaderId != 0) {
-            glDetachShader(this.shaderProgramId, this.fragmentShaderId);
-        }
+        glDetachShader(this.shaderProgramId, this.fragmentShaderId);
+        glDeleteShader(this.fragmentShaderId);
 
         glValidateProgram(this.shaderProgramId);
         if (glGetProgrami(this.shaderProgramId, GL_VALIDATE_STATUS) == 0) {
             System.err.println("Warning: Validating Shader code: " + glGetProgramInfoLog(this.shaderProgramId, 1024));
         }
+
+        glUseProgram(0);
     }
     public void bind(){
+        unbind();
         glUseProgram(this.shaderProgramId);
     }
     public void unbind(){

@@ -1,27 +1,34 @@
 package core.engine;
 
+import core.utils.MathUtils;
 import org.joml.*;
 import org.joml.Math;
 
 public class Particle {
-    private final float size;
+    private float size;
     private final Vector2f position;
     private final Vector4f color;
     private final float vx, vy;
-    private float lifetime = 100.0f;
+    private float lifetime = 500.0f;
 
-    public Particle(Vector2f pos, float size){
-        this.size = size;
+    public Particle(Vector2f pos){
+        this.size = (float) Math.random() * 100.0f;
         this.position = pos;
-        this.color = new Vector4f(0.9f, 0.75f, 0.2f, (float) Math.random());
-        this.vx = (float) (Math.random() - 0.5f) * 50.0f;
-        this.vy = (float) (Math.random() - 0.5f) * 50.0f;
+
+        this.vx = 0;
+
+        if(this.size > 70.0f){
+            this.vy = (float) - (Math.random() - 1.0f) * 200.0f;
+            this.color = new Vector4f(MathUtils.getRandom(1.0f,0.8f), 0.0f, 0.9f, MathUtils.getRandom(0.4f, 0.0f));
+        }
+        else {
+            this.vy = (float) - (Math.random() - 1.0f) * 500.0f;
+            this.color = new Vector4f(MathUtils.getRandom(0.75f,0.3f), 0.0f, 0.9f, MathUtils.getRandom(1.0f, 0.5f));
+        }
+
     }
 
     public Vector4f getColor(){
-        //return new Vector4f(0.2f, 0.15f, 0.3f,  1);
-        //return new Vector4f(0.0f, 9.0f, 0.3f, 1.0f);
-        //return new Vector4f((float) Math.random(), (float) Math.random(),(float) Math.random(), 1.0f);
         return this.color;
     }
 
@@ -32,6 +39,7 @@ public class Particle {
     public void update(float dt){
         this.position.add(vx * dt, vy * dt);
         this.lifetime -= 0.5f;
+        this.size -= 0.1f;
     }
 
     public float getSize(){

@@ -32,6 +32,8 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
         window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_TITLE, NULL, NULL);
@@ -47,6 +49,8 @@ public class Window {
         glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(window, MouseListener::scrollCallback);
         glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
+
+        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         //joystick call backs
         //JoystickListener joystickListener = JoystickListener.get();
@@ -81,14 +85,14 @@ public class Window {
         glfwShowWindow(window);
         createCapabilities();
 
+        glDisable(GL_CULL_FACE);
+
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_STENCIL_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glEnable(GL_MULTISAMPLE);
-
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         sceneInstance = new Scene();
     }
@@ -112,11 +116,9 @@ public class Window {
             glfwPollEvents();
 
             if(dt > 0){
-                glClearColor(0.23f, 0.18f, 0.33f,  1);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
                 sceneInstance.updateInputs(dt);
                 if(StateMachine.play()) sceneInstance.update(dt);
+
                 sceneInstance.render(dt);
             }
 
