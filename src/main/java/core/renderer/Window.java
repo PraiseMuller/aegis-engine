@@ -1,11 +1,11 @@
-package core.engine;
+package core.renderer;
 
-import core.inputs.JoystickListener;
+import core.engine.Scene;
+import core.engine.StateMachine;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
 import core.utils.AssetPool;
 import core.utils.Time;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 
@@ -14,7 +14,6 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
@@ -85,14 +84,7 @@ public class Window {
         glfwShowWindow(window);
         createCapabilities();
 
-        glDisable(GL_CULL_FACE);
-
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_STENCIL_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         sceneInstance = new Scene();
     }

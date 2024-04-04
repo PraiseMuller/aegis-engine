@@ -14,8 +14,8 @@ public class BatchManager {
         this.batches = new ArrayList<>();
 
         this.shaderProgram = new ShaderProgram();
-        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/defaults/vertex.glsl"));
-        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/defaults/fragment.glsl"));
+        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/batch/vertex.glsl"));
+        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/batch/fragment.glsl"));
         this.shaderProgram.link();
 
         this.shaderProgram.bind();

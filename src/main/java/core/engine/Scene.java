@@ -26,16 +26,8 @@ public class Scene implements IGameLogic {
     @Override
     public void init(){
         Camera.init();
-        this.loadParticles();
         this.player = new Player(new Vector3f(WIN_WIDTH / 2f, WIN_HEIGHT / 2f, 0));
-    }
-
-    public void loadParticles(){
-        for(int i = 0; i < pCount; i++){
-            this.particles.add(new Particle(  new Vector2f((float) Math.random() * 2 * WIN_WIDTH, 0)));
-        }
-
-        this.sceneRenderer = new Renderer(this.particles);
+        this.sceneRenderer = new Renderer();
     }
 
     @Override

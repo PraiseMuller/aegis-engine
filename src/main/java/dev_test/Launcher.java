@@ -1,6 +1,6 @@
 package dev_test;
 
-import core.engine.Window;
+import core.renderer.Window;
 
 public class Launcher {
     public static void main(String[] args){

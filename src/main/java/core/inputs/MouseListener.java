@@ -1,9 +1,5 @@
 package core.inputs;
 
-import core.engine.Window;
-
-import static core.utils.SETTINGS.WIN_HEIGHT;
-import static core.utils.SETTINGS.WIN_WIDTH;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseListener {

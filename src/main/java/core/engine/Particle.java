@@ -14,17 +14,14 @@ public class Particle {
     public Particle(Vector2f pos){
         this.size = (float) Math.random() * 100.0f;
         this.position = pos;
-
+        this.color = new Vector4f(MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f, 0.0f));
         this.vx = 0;
 
-        if(this.size > 70.0f){
+        if(this.size > 70.0f)
             this.vy = (float) - (Math.random() - 1.0f) * 200.0f;
-            this.color = new Vector4f(MathUtils.getRandom(1.0f,0.8f), 0.0f, 0.9f, MathUtils.getRandom(0.4f, 0.0f));
-        }
-        else {
+
+        else
             this.vy = (float) - (Math.random() - 1.0f) * 500.0f;
-            this.color = new Vector4f(MathUtils.getRandom(0.75f,0.3f), 0.0f, 0.9f, MathUtils.getRandom(1.0f, 0.5f));
-        }
 
     }
 

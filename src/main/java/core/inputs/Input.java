@@ -1,17 +1,12 @@
 package core.inputs;
 
-import core.engine.Camera;
 import core.engine.Scene;
 import core.engine.StateMachine;
-import core.engine.Window;
-import core.entities.Player;
+import core.renderer.Window;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import static core.utils.SETTINGS.WIN_HEIGHT;
-import static core.utils.SETTINGS.WIN_WIDTH;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.glViewport;
 
 public class Input {
     private Input(){}
@@ -58,9 +53,11 @@ public class Input {
             StateMachine.changeState();
         }
 
-        if(KeyListener.isKeyPressed(GLFW_KEY_R)){
-            scene.loadParticles();
-        }
+
+        //RELOAD CURRENT SCENE
+        //if(KeyListener.isKeyPressed(GLFW_KEY_R)){
+        //    scene.loadParticles();
+        //}
 
 
 

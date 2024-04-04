@@ -1,0 +1,186 @@
+package core.postprocess;
+
+import core.renderer.ShaderProgram;
+import core.renderer.Texture;
+import core.utils.AssetPool;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+
+import static core.utils.SETTINGS.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
+
+public class BloomRenderer {
+
+    private int vao;
+    private final BloomFramebuffer bloomFBO;
+    private final ShaderProgram downsampleShader;
+    private final ShaderProgram upsampleShader;
+
+    public BloomRenderer(int windowWidth, int windowHeight) {
+        this.vao= 0;
+
+        this.downsampleShader = new ShaderProgram();
+        this.downsampleShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
+        this.downsampleShader.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/downsample_fragment.glsl"));
+        this.downsampleShader.link();
+
+        this.downsampleShader.createUniform("srcTexture");
+        this.downsampleShader.createUniform("srcResolution");
+
+
+        this.upsampleShader = new ShaderProgram();
+        this.upsampleShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
+        this.upsampleShader.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/upsample_fragment.glsl"));
+        this.upsampleShader.link();
+
+        this.upsampleShader.createUniform("srcTexture");
+        this.upsampleShader.createUniform("filterRadius");
+
+        // Framebuffer
+        int num_bloom_mips = 3; // Experiment with this value
+        this.bloomFBO = new BloomFramebuffer(windowWidth, windowHeight, num_bloom_mips);
+    }
+
+    public void renderBloomTexture(Texture srcTexture, float filterRadius) {
+        this.bloomFBO.bindForWriting();
+
+        renderDownsamples(srcTexture);
+        renderUpsamples(filterRadius);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    private void renderDownsamples(Texture texture) {
+
+        ArrayList<Mip> mipChain = this.bloomFBO.getMipChain();
+
+        this.downsampleShader.bind();
+        Texture srcTexture = texture;
+        srcTexture.bind();
+
+        // Progressively downsample through the mip chain
+        for (int i = 0; i < mipChain.size(); i++) {
+
+            Mip mip = mipChain.get(i);
+
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mip.texture.getId(), 0);
+            glViewport(0, 0, (int) mip.size.x, (int) mip.size.y);
+
+            // Set current mip resolution as srcResolution for next iteration
+            this.downsampleShader.uploadVec2fUniform("srcResolution", mip.size);
+            this.downsampleShader.uploadIntUniform("srcTexture", srcTexture.getBindLocation());
+
+            // Render screen-filled quad of resolution of current mip
+            this.renderQuad();
+
+            // Set current mip as texture input for next iteration
+            srcTexture = mip.texture;
+            srcTexture.bind();
+        }
+
+        this.downsampleShader.unbind();
+    }
+
+    private void renderUpsamples(float filterRadius) {
+
+        ArrayList<Mip> mipChain = this.bloomFBO.getMipChain();
+
+        // Enable additive blending
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+        glBlendEquation(GL_FUNC_ADD);
+
+        this.upsampleShader.bind();
+
+        for (int i = mipChain.size() - 1; i > 0 ; i--) {
+
+            Mip mip = mipChain.get(i);
+            Mip nextMip = mipChain.get(i - 1);
+
+            // Bind viewport and texture from where to read
+            mip.texture.bind();
+
+            // Set framebuffer render target (we write to this texture)
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, nextMip.texture.getId(), 0);
+            glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
+
+            this.upsampleShader.uploadFloatUniform("filterRadius", filterRadius);
+            this.upsampleShader.uploadIntUniform("srcTexture", mip.texture.getBindLocation());
+
+            // Render screen-filled quad of resolution of current mip
+            this.renderQuad();
+
+            mip.texture.unbind();
+        }
+
+
+
+        // Disable additive blending
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Restore if this was default
+        glDisable(GL_BLEND);
+
+        this.upsampleShader.unbind();
+    }
+
+    public Texture bloomTexture() {
+        return this.bloomFBO.getMipChain().get(  0  ).texture;
+    }
+
+    public void dispose() {
+        glDeleteVertexArrays(this.vao);
+        this.bloomFBO.dispose();
+        this.downsampleShader.dispose();
+        this.upsampleShader.dispose();
+    }
+
+    private void renderQuad() {
+        if (this.vao == 0) {
+            this.vao = glGenVertexArrays();
+            glBindVertexArray(this.vao);
+
+            float[] quadVertices = {
+                     1.0f,  1.0f,   1.0f, 1.0f,
+                    -1.0f,  1.0f,   0.0f, 1.0f,
+                    -1.0f, -1.0f,   0.0f, 0.0f,
+                     1.0f, -1.0f,   1.0f, 0.0f
+            };
+            FloatBuffer vertBuffer = MemoryUtil.memAllocFloat(quadVertices.length);
+            vertBuffer.put(quadVertices).flip();
+
+            int[] indices = {
+                    0, 3, 2,
+                    0, 2, 1
+            };
+            IntBuffer indBuffer = MemoryUtil.memAllocInt(indices.length);
+            indBuffer.put(indices).flip();
+
+            int vbo = glGenBuffers();
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, vertBuffer, GL_STATIC_DRAW);
+
+            int ebo = glGenBuffers();
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indBuffer, GL_STATIC_DRAW);
+
+            glVertexAttribPointer(0, 2, GL_FLOAT, false, 4 * Float.BYTES, 0);   //pos
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES); //tex cords
+
+            MemoryUtil.memFree(indBuffer);
+            MemoryUtil.memFree(vertBuffer);
+        }
+
+        glBindVertexArray(this.vao);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glBindVertexArray(0);
+    }
+}

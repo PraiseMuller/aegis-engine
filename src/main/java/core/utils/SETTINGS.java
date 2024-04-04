@@ -2,6 +2,7 @@ package core.utils;
 
 import core.ui.Layout;
 import core.ui.VerticalLayout;
+import org.joml.Vector4f;
 
 public final class SETTINGS {
     public final static String WIN_TITLE = "AEGIS Engine";
@@ -11,6 +12,11 @@ public final class SETTINGS {
     public static final float Z_NEAR = 0.01f;
     public static final float Z_FAR = 1000f;
     public static final Layout DEFAULT_LAYOUT = new VerticalLayout();
+
+
+    //COLORS
+    public static final Vector4f BLACK = new Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
+    public static final Vector4f SCOL = new Vector4f(0.23f, 0.18f, 0.33f,  1.0f);
 
 
     private SETTINGS(){}

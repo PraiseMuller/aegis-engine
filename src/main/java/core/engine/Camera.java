@@ -1,8 +1,8 @@
 package core.engine;
 
+import core.renderer.Window;
 import core.utils.MathUtils;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static core.utils.SETTINGS.*;

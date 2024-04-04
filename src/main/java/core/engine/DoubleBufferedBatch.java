@@ -65,11 +65,9 @@ public class DoubleBufferedBatch {
         long offset = (long) this.numEntities * 4 * VERTEX_SIZE_BYTES;
         float[] pVertices = this.getVertices(particle);
 
-        glBindVertexArray(this.vao);
         glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
         glBufferSubData(GL_ARRAY_BUFFER, offset, pVertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
 
         this.numEntities++;
     }
@@ -80,11 +78,9 @@ public class DoubleBufferedBatch {
             long offset = (long) index * 4 * VERTEX_SIZE_BYTES;
             float[] pVertices = this.getVertices(particle);
 
-            glBindVertexArray(this.vao);
             glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
             glBufferSubData(GL_ARRAY_BUFFER, offset, pVertices);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
         }
     }
 
@@ -92,13 +88,11 @@ public class DoubleBufferedBatch {
         if(index <= this.numEntities) {
 
             long offset = (long) index * 4 * VERTEX_SIZE_BYTES;
-            float[] pVertices = this.getVertices(particle);
+            int len = 4 * 7;
 
-            glBindVertexArray(this.vao);
             glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
-            glBufferSubData(GL_ARRAY_BUFFER, offset, new float[pVertices.length]);
+            glBufferSubData(GL_ARRAY_BUFFER, offset, new float[len]);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
 
             this.numEntities--;
         }

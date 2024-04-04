@@ -1,29 +1,29 @@
 package core.postprocess;
 
 import core.renderer.ShaderProgram;
+import core.renderer.Texture;
 import core.utils.AssetPool;
-import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.system.MemoryUtil.memFree;
 
-public class Quad {
+public class ScreenQuad {
     private final int vao, vbo, ebo;
     private final ShaderProgram shaderProgram;
 
-    public Quad(){
+    public ScreenQuad(){
         this.shaderProgram = new ShaderProgram();
-        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/bw_vertex.glsl"));
-        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/bw_fragment.glsl"));
+        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/screen-quad/fin_vertex.glsl"));
+        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/screen-quad/fin_fragment.glsl"));
         this.shaderProgram.link();
 
-        //this.shaderProgram.createUniform("textureSampler");
+        this.shaderProgram.createUniform("screenTexture");
+        this.shaderProgram.createUniform("bloomTexture");
 
         float[] quadVertices = {
              1.0f, 1.0f,     1.0f, 1.0f,
@@ -31,14 +31,14 @@ public class Quad {
             -1.0f,-1.0f,     0.0f, 0.0f,
              1.0f,-1.0f,     1.0f, 0.0f
         };
-        FloatBuffer vertBuffer = BufferUtils.createFloatBuffer(quadVertices.length);
+        FloatBuffer vertBuffer = MemoryUtil.memAllocFloat(quadVertices.length);
         vertBuffer.put(quadVertices).flip();
 
         int[] indices = {
                 0, 3, 2,
                 0, 2, 1
         };
-        IntBuffer indBuffer = BufferUtils.createIntBuffer(quadVertices.length);
+        IntBuffer indBuffer = MemoryUtil.memAllocInt(indices.length);
         indBuffer.put(indices).flip();
 
         this.vao = glGenVertexArrays();
@@ -55,16 +55,27 @@ public class Quad {
         glVertexAttribPointer(0, 2, GL_FLOAT, false, 4 * Float.BYTES, 0);   //pos
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES); //tex cords
 
-        memFree(indBuffer);
-        memFree(vertBuffer);
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+
+        MemoryUtil.memFree(indBuffer);
+        MemoryUtil.memFree(vertBuffer);
     }
 
-    public void render(){
+    public void render(Texture bloomTexture, Texture screenTexture){
         this.shaderProgram.bind();
+
+        screenTexture.bind();
+        this.shaderProgram.uploadIntUniform("screenTexture", screenTexture.getBindLocation());
+
+        bloomTexture.bind();
+        this.shaderProgram.uploadIntUniform("bloomTexture", bloomTexture.getBindLocation());
+
+        //Enable additive blending
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+        glBlendEquation(GL_FUNC_ADD);
 
         glBindVertexArray(this.vao);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.ebo);
@@ -77,6 +88,13 @@ public class Quad {
         glDisableVertexAttribArray(1);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+
+        screenTexture.unbind();
+        bloomTexture.unbind();
+
+        // Disable additive blending
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Restore if this was default
+        glDisable(GL_BLEND);
 
         this.shaderProgram.unbind();
     }
