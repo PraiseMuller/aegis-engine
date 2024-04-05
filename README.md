@@ -1,3 +1,3 @@
-##aegis-engine
+aegis-engine
 
-#A Custom 2D/3D Graphics Engine. Java and OpenGL.
+A Custom 2D/3D Graphics Engine. Java and OpenGL.
