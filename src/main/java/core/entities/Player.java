@@ -4,7 +4,6 @@ import core.utils.Transform;
 import org.joml.Vector3f;
 
 public class Player {
-    private final float MOVE_SPEED = 300.0f;
     private final Transform pTransform;
     private final Mesh mesh;
 
@@ -40,6 +39,7 @@ public class Player {
         return this.pTransform.position;
     }
     public float getMovePower(){
-        return this.MOVE_SPEED;
+        return 500.0f;
     }
 }
+

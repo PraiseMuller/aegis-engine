@@ -1,5 +1,6 @@
 package core.inputs;
 
+import core.engine.Camera;
 import core.engine.Scene;
 import core.engine.StateMachine;
 import core.renderer.Window;
@@ -33,13 +34,6 @@ public class Input {
         }
         if(KeyListener.isKeyPressed(GLFW_KEY_E)){
             delta.add(new Vector3f(0.0f, 0.0f, -playerMovePower * dt));
-        }
-
-
-        //mouse clicked.. move player
-        if(MouseListener.mouseButtonDown(0) || MouseListener.isDragging()){
-            scene.getPlayer().follow(MouseListener.getX(), MouseListener.getY());
-            MouseListener.endFrame();
         }
 
         //update player pos#

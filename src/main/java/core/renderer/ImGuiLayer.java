@@ -193,7 +193,8 @@ public class ImGuiLayer {
         // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
         ImGui.newFrame();
                 //game.updateImgui(dt);
-                ImGui.text("FPS: " + 1/dt +"\n");
+                ImGui.text("FPS: " + 1/dt);
+                ImGui.text("Time Elapsed: "+ scene.timeElapsed + " sec.\n");
                 if(StateMachine.play()) ImGui.text("State: Running\n");
                 else ImGui.text("State: Stopped\n");
                 ImGui.text("Quads: " + Scene.pCount);

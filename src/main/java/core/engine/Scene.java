@@ -18,6 +18,7 @@ public class Scene implements IGameLogic {
     private final List<Particle> particles = new ArrayList<>();
     private Renderer sceneRenderer;
     private Player player;
+    public float timeElapsed = 0.0f;
 
     public Scene(){
         this.init();
@@ -61,6 +62,8 @@ public class Scene implements IGameLogic {
             else
                 this.sceneRenderer.updateVertex(particle, i);
         }
+
+        this.timeElapsed += 0.01f;
     }
     @Override
     public void render(float dt){
