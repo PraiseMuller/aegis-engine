@@ -87,9 +87,8 @@ public class Window {
         glfwShowWindow(window);
         createCapabilities();
 
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glBlendEquation(GL_FUNC_ADD);
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 

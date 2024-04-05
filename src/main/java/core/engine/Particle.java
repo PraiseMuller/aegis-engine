@@ -15,12 +15,12 @@ public class Particle {
     private float lifetime = 200.0f;
 
     public Particle(Vector2f pos){
-        this.size = (float) Math.random() * 20.0f;
+        this.size = (float) Math.random() * 15.0f;
         this.position = pos;
-        this.color = new Vector4f(MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f,0.0f), 0.1f);
+        this.color = new Vector4f(MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f,0.0f), MathUtils.getRandom(1.0f,0.0f));
         this.vx = MathUtils.getRandom(1.0f,0.0f);
 
-        if(this.size > 15.0f)
+        if(this.size > 10.0f)
             this.vy = (float) - (Math.random() - 1.0f) * 300.0f;
 
         else

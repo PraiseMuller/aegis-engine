@@ -31,7 +31,6 @@ public class PostProcessingPipeline {
         scene.getPlayer().render();
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-
         //Process: 1. Bloom
         Texture sceneTexture = this.fistPassframeBuffer.getColorAttachment();
         this.bloomRenderer.renderBloomTexture(sceneTexture, 0.0056f);

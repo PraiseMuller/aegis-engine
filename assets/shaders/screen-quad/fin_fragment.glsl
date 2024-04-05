@@ -6,6 +6,9 @@ in vec2 fTextCoords;
 uniform sampler2D screenTexture;
 uniform sampler2D bloomTexture;
 uniform int bloomOn;
+uniform int blackAndWhiteOn;
+uniform int colorInvert;
+uniform int gammaCorrect;
 
 //f(n) declarations
 vec3 aces(vec3 aColor);
@@ -16,14 +19,25 @@ void main(){
 
     //bloom is turned on
     if(bloomOn == 1)
-        hdrColor += bloomColor;
+        hdrColor.rgb += bloomColor.rgb;
+
+    //also gamma correct while we’re at it
+    if(gammaCorrect == 1){
+        const float gamma = 2.2;
+        hdrColor.rgb = pow(hdrColor.rgb, vec3(1.0 / gamma));
+    }
 
     //tone mapping
     vec3 result = aces(hdrColor.rgb);
 
-    //also gamma correct while we’re at it
-    const float gamma = 2.2;
-    result = pow(result, vec3(1.0 / gamma));
+    if(blackAndWhiteOn == 1){
+        float avg = (result.r + result.g + result.b) / 3.0f;
+        result.rgb = vec3(avg, avg, avg);
+    }
+
+    if(colorInvert == 1){
+        result = 1 - result;
+    }
 
     color = vec4(result, hdrColor.w);
 }

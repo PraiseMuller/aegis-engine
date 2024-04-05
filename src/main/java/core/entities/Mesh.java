@@ -78,7 +78,7 @@ public class Mesh {
         this.shaderProgram.bind();
         this.shaderProgram.uploadMat4fUniform("projectionMatrix", Camera.projectionMatrix());
         this.shaderProgram.uploadMat4fUniform("viewMatrix", Camera.viewMatrix());
-        this.shaderProgram.uploadVec4fUniform("fColor", new Vector4f(0.2f,0.2f,0.2f,0.1f));
+        this.shaderProgram.uploadVec4fUniform("fColor", new Vector4f(0.2f,0.6f,0.4f,0.4f));
 
         glBindVertexArray(this.vao);
         glEnableVertexAttribArray(0);

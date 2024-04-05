@@ -172,7 +172,7 @@ public class ImGuiLayer {
         // Fonts merge example
         fontConfig.setPixelSnapH(true);
         //fontAtlas.addFontFromFileTTF("assets/fonts/jm-nexus-grotesque.ttf", 25, fontConfig);
-        fontAtlas.addFontFromFileTTF("assets/fonts/razorclaw-bold-italic.ttf", 32, fontConfig);
+        fontAtlas.addFontFromFileTTF("assets/fonts/marsh-thing-bold.ttf", 24, fontConfig);
 
         fontConfig.destroy(); // After all fonts were added we don't need this config more
 
@@ -192,18 +192,33 @@ public class ImGuiLayer {
 
         // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
         ImGui.newFrame();
-            //game.updateImgui(dt);
-            ImGui.text("FPS: " + 1/dt +"\n");
-            if(StateMachine.play()) ImGui.text("State: Running\n");
-            else ImGui.text("State: Stopped\n");
-            ImGui.text("Quads: " + Scene.pCount);
-            ImGui.text("Camera Position: " + Camera.getPosition());
-            ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
+                //game.updateImgui(dt);
+                ImGui.text("FPS: " + 1/dt +"\n");
+                if(StateMachine.play()) ImGui.text("State: Running\n");
+                else ImGui.text("State: Stopped\n");
+                ImGui.text("Quads: " + Scene.pCount);
+                ImGui.text("Camera Position: " + Camera.getPosition());
+                ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
 
-            if(ImGui.checkbox("Bloom", BLOOM_ON)){
-                BLOOM_ON = !BLOOM_ON;
-            }
 
+                if(ImGui.checkbox("Gamma correction", GAMMA_CORRECT)){
+                    GAMMA_CORRECT = !GAMMA_CORRECT;
+                }
+
+                ImGui.separator();
+                if(ImGui.checkbox("Bloom", BLOOM_ON)){
+                    BLOOM_ON = !BLOOM_ON;
+                }
+
+                ImGui.separator();
+                if(ImGui.checkbox("Black and White", BLACK_AND_WHITE_ON)){
+                    BLACK_AND_WHITE_ON = !BLACK_AND_WHITE_ON;
+                }
+
+                ImGui.separator();
+                if(ImGui.checkbox("Color invert", COLOR_INVERT)){
+                    COLOR_INVERT = !COLOR_INVERT;
+                }
         ImGui.render();
 
         endFrame();
