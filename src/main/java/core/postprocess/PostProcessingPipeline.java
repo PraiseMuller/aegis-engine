@@ -3,6 +3,7 @@ package core.postprocess;
 import core.engine.BatchManager;
 import core.engine.Scene;
 import core.renderer.Texture;
+import core.utils.SETTINGS;
 
 import static core.utils.SETTINGS.*;
 import static core.utils.SETTINGS.BLACK;
@@ -25,17 +26,20 @@ public class PostProcessingPipeline {
 
         //draw scene into a fbo to extract the texture.
         this.fistPassframeBuffer.bind();
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         batchManager.render();
         scene.getPlayer().render();
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        //Process the bloom
+
+        //Process: 1. Bloom
         Texture sceneTexture = this.fistPassframeBuffer.getColorAttachment();
-        this.bloomRenderer.renderBloomTexture(sceneTexture, 0.005f);
+        this.bloomRenderer.renderBloomTexture(sceneTexture, 0.0056f);
 
-        //apply bloom
+        //Apply: 1. Bloom
         defaultFramebuffer();
-        this.bloomRenderer.bloomTexture().bind();
-        this.fScreenQuad.render(this.bloomRenderer.bloomTexture(), sceneTexture);
+        Texture bloomTexture = this.bloomRenderer.bloomTexture();
+        this.fScreenQuad.render(sceneTexture, bloomTexture);
     }
 
     public void dispose(){

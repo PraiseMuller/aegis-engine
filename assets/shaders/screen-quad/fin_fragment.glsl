@@ -5,25 +5,27 @@ in vec2 fTextCoords;
 
 uniform sampler2D screenTexture;
 uniform sampler2D bloomTexture;
+uniform int bloomOn;
 
 //f(n) declarations
 vec3 aces(vec3 aColor);
 
 void main(){
-
     vec4 hdrColor = texture(screenTexture, fTextCoords);
     vec4 bloomColor = texture(bloomTexture, fTextCoords);
 
-    hdrColor += bloomColor;
-
-    // also gamma correct while we’re at it
-    const float gamma = 2.2;
-    hdrColor = pow(hdrColor, vec4(1.0 / gamma));
+    //bloom is turned on
+    if(bloomOn == 1)
+        hdrColor += bloomColor;
 
     //tone mapping
     vec3 result = aces(hdrColor.rgb);
 
-    color = vec4(result, 0.1f);
+    //also gamma correct while we’re at it
+    const float gamma = 2.2;
+    result = pow(result, vec3(1.0 / gamma));
+
+    color = vec4(result, hdrColor.w);
 }
 
 

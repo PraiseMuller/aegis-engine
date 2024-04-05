@@ -14,7 +14,7 @@ public class FrameBuffer {
         glBindFramebuffer(GL_FRAMEBUFFER, this.fbo_id);
 
         //attach frame buffer attachments
-        this.texture = new Texture(WIN_WIDTH, WIN_HEIGHT, 2);
+        this.texture = new Texture(WIN_WIDTH, WIN_HEIGHT, 2, true);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.texture.getId(), 0);
 
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -28,8 +28,6 @@ public class FrameBuffer {
         glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
         glClearColor(BLACK.x, BLACK.y, BLACK.z, BLACK.w);
         glClear(GL_COLOR_BUFFER_BIT);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public Texture getColorAttachment(){

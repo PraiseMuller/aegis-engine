@@ -8,6 +8,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static core.utils.SETTINGS.BLOOM_ON;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -24,6 +25,7 @@ public class ScreenQuad {
 
         this.shaderProgram.createUniform("screenTexture");
         this.shaderProgram.createUniform("bloomTexture");
+        this.shaderProgram.createUniform("bloomOn");
 
         float[] quadVertices = {
              1.0f, 1.0f,     1.0f, 1.0f,
@@ -63,14 +65,16 @@ public class ScreenQuad {
         MemoryUtil.memFree(vertBuffer);
     }
 
-    public void render(Texture bloomTexture, Texture screenTexture){
+    public void render(Texture sceneTexture, Texture bloomTexture){
         this.shaderProgram.bind();
 
-        screenTexture.bind();
-        this.shaderProgram.uploadIntUniform("screenTexture", screenTexture.getBindLocation());
+        sceneTexture.bind();
+        this.shaderProgram.uploadIntUniform("screenTexture", sceneTexture.getBindLocation());
 
         bloomTexture.bind();
         this.shaderProgram.uploadIntUniform("bloomTexture", bloomTexture.getBindLocation());
+
+        this.shaderProgram.uploadIntUniform("bloomOn", BLOOM_ON ? 1 : 0);
 
         //Enable additive blending
         glEnable(GL_BLEND);
@@ -89,12 +93,12 @@ public class ScreenQuad {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
 
-        screenTexture.unbind();
+        sceneTexture.unbind();
         bloomTexture.unbind();
 
         // Disable additive blending
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Restore if this was default
-        glDisable(GL_BLEND);
+        //glDisable(GL_BLEND);
 
         this.shaderProgram.unbind();
     }

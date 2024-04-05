@@ -14,8 +14,7 @@ import imgui.callback.ImStrSupplier;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 
-import static core.utils.SETTINGS.WIN_HEIGHT;
-import static core.utils.SETTINGS.WIN_WIDTH;
+import static core.utils.SETTINGS.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class ImGuiLayer {
@@ -173,7 +172,7 @@ public class ImGuiLayer {
         // Fonts merge example
         fontConfig.setPixelSnapH(true);
         //fontAtlas.addFontFromFileTTF("assets/fonts/jm-nexus-grotesque.ttf", 25, fontConfig);
-        fontAtlas.addFontFromFileTTF("assets/fonts/sf-zero-gravity-bold.ttf", 16, fontConfig);
+        fontAtlas.addFontFromFileTTF("assets/fonts/razorclaw-bold-italic.ttf", 32, fontConfig);
 
         fontConfig.destroy(); // After all fonts were added we don't need this config more
 
@@ -200,6 +199,10 @@ public class ImGuiLayer {
             ImGui.text("Quads: " + Scene.pCount);
             ImGui.text("Camera Position: " + Camera.getPosition());
             ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
+
+            if(ImGui.checkbox("Bloom", BLOOM_ON)){
+                BLOOM_ON = !BLOOM_ON;
+            }
 
         ImGui.render();
 

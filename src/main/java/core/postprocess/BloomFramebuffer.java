@@ -13,24 +13,23 @@ public class BloomFramebuffer {
     private final ArrayList<Mip> mipChain;
 
     public BloomFramebuffer(int windowWidth, int windowHeight, int mipChainLength){
+
         this.mipChain = new ArrayList<>();
-
-        this.fbo = glGenFramebuffers();
-        glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
-
         Vector2f mipSize = new Vector2f((float)windowWidth, (float)windowHeight);
 
         for (int i = 0; i < mipChainLength; i++) {
 
             Mip mip = new Mip();
             mipSize.mul(0.5f);
-            mip.size = mipSize;
+            mip.size = new Vector2f(mipSize);
             mip.texture = new Texture((int)mip.size.x, (int)mip.size.y, 1, true);
 
             this.mipChain.add(mip);
             //this.mipChain.add(0, mip);
         }
 
+        this.fbo = glGenFramebuffers();
+        glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mipChain.get(0).texture.getId(), 0);
 
         // setup attachments
@@ -45,10 +44,14 @@ public class BloomFramebuffer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public void bindForWriting(){
+    public void bind(){
         glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
         glClearColor(BLACK.x, BLACK.y, BLACK.z, BLACK.w);
         glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    public void unbind(){
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     public ArrayList<Mip> getMipChain() {
@@ -60,6 +63,6 @@ public class BloomFramebuffer {
             mip.texture.dispose();
         }
 
-        this.fbo = 0;
+        glDeleteFramebuffers(this.fbo);
     }
 }

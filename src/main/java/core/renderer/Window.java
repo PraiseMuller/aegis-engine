@@ -1,5 +1,6 @@
 package core.renderer;
 
+import core.engine.Camera;
 import core.engine.Scene;
 import core.engine.StateMachine;
 import core.inputs.KeyListener;
@@ -14,6 +15,8 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
+import static org.lwjgl.opengl.GL14.glBlendEquation;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
@@ -63,7 +66,7 @@ public class Window {
             setWidth(width);
             setHeight(height);
             glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
-            //Camera.init();
+            Camera.init();
         });
 
         GLFWImage image = GLFWImage.malloc();
@@ -83,6 +86,10 @@ public class Window {
 
         glfwShowWindow(window);
         createCapabilities();
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+        glBlendEquation(GL_FUNC_ADD);
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 

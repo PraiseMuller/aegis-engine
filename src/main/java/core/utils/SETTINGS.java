@@ -12,7 +12,7 @@ public final class SETTINGS {
     public static final float Z_NEAR = 0.01f;
     public static final float Z_FAR = 1000f;
     public static final Layout DEFAULT_LAYOUT = new VerticalLayout();
-
+    public static boolean BLOOM_ON = true;
 
     //COLORS
     public static final Vector4f BLACK = new Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
