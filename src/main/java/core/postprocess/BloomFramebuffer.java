@@ -45,6 +45,9 @@ public class BloomFramebuffer {
     }
 
     public void bind(){
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+
         glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
         glClearColor(BLACK.x, BLACK.y, BLACK.z, BLACK.w);
         glClear(GL_COLOR_BUFFER_BIT);

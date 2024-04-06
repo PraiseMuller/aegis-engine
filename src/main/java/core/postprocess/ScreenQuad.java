@@ -103,7 +103,7 @@ public class ScreenQuad {
         bloomTexture.unbind();
 
         // Disable additive blending
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Restore if this was default
+        glDisable(GL_BLEND);
 
         this.shaderProgram.unbind();
     }

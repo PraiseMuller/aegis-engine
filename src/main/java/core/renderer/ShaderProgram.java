@@ -1,5 +1,8 @@
 package core.renderer;
 
+import core.entities.Material;
+import core.lighting.DirectionalLight;
+import core.lighting.PointLight;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -117,6 +120,42 @@ public class ShaderProgram {
 
     public void uploadFloatUniform(String uniformName, float value) {
         glUniform1f(this.uniformLocation.get(uniformName), value);
+    }
+
+    public void createPointLightUniform(String uniformName){
+        createUniform(uniformName + ".color");
+        createUniform(uniformName + ".position");
+        createUniform(uniformName + ".intensity");
+    }
+
+    public void createDirectionalLightUniform(String uniformName){
+        createUniform(uniformName + ".color");
+        createUniform(uniformName + ".direction");
+        createUniform(uniformName + ".intensity");
+    }
+
+    public void createMaterialUniform(String uniformName){
+        createUniform(uniformName + ".color");
+        createUniform(uniformName + ".metallic");
+        createUniform(uniformName + ".roughness");
+    }
+
+    public void setUniform(String uniformName, PointLight pointLight){
+        uploadVec3fUniform(uniformName + ".color", pointLight.getColor());
+        uploadVec3fUniform(uniformName + ".position", pointLight.getPosition());
+        uploadFloatUniform(uniformName + ".intensity", pointLight.getIntensity());
+    }
+
+    public void setUniform(String uniformName, DirectionalLight directionalLight){
+        uploadVec3fUniform(uniformName + ".color", directionalLight.getColor());
+        uploadVec3fUniform(uniformName + ".direction", directionalLight.getDirection());
+        uploadFloatUniform(uniformName + ".intensity", directionalLight.getIntensity());
+    }
+
+    public void setUniform(String uniformName, Material material){
+        uploadVec3fUniform(uniformName + ".color", material.getColor());
+        uploadFloatUniform(uniformName + ".metallic", material.getMetallicVal());
+        uploadFloatUniform(uniformName + ".roughness", material.getRoughnessVal());
     }
 
     public void uploadVec4fArrayUniform(String uniformName, Vector4f[] ncols) {

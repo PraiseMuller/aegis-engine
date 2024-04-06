@@ -7,7 +7,8 @@ import core.renderer.Window;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import static core.utils.SETTINGS.MOUSE_SENSITIVITY;
+import static core.utils.SETTINGS.*;
+import static core.utils.SETTINGS.CAMERA_INIT_POS;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Input {
@@ -28,14 +29,14 @@ public class Input {
             if (KeyListener.isKeyPressed(GLFW_KEY_D))   delta.add(new Vector3f(playerMovePower * dt, 0.0f, 0.0f));
             if (KeyListener.isKeyPressed(GLFW_KEY_A))   delta.add(new Vector3f(-playerMovePower * dt, 0.0f, 0.0f));
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_Q))   delta.add(new Vector3f(0.0f, -playerMovePower * dt, 0.0f));
-            if (KeyListener.isKeyPressed(GLFW_KEY_E))   delta.add(new Vector3f(0.0f, playerMovePower * dt, 0.0f));
+            if (KeyListener.isKeyPressed(GLFW_KEY_Q))   delta.add(new Vector3f(0.0f, playerMovePower * dt, 0.0f));
+            if (KeyListener.isKeyPressed(GLFW_KEY_E))   delta.add(new Vector3f(0.0f, -playerMovePower * dt, 0.0f));
 
             //CAM ROT
-            if (KeyListener.isKeyPressed(GLFW_KEY_LEFT))    cameraRot = new Vector3f(0.0f, -MOUSE_SENSITIVITY * 650f * dt, 0.0f);
-            if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT))   cameraRot = new Vector3f(0.0f, MOUSE_SENSITIVITY * 650f * dt, 0.0f);
-            if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_UP))     cameraRot = new Vector3f(MOUSE_SENSITIVITY * 200f * dt, 0.0f, 0.0f);
-            if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_DOWN))   cameraRot = new Vector3f(-MOUSE_SENSITIVITY * 200f * dt, 0.0f, 0.0f);
+            if (KeyListener.isKeyPressed(GLFW_KEY_LEFT))    cameraRot = new Vector3f(0.0f, -MOUSE_SENSITIVITY * 800f * dt, 0.0f);
+            if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT))   cameraRot = new Vector3f(0.0f, MOUSE_SENSITIVITY * 800f * dt, 0.0f);
+            if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_UP))     cameraRot = new Vector3f(MOUSE_SENSITIVITY * 500f * dt, 0.0f, 0.0f);
+            if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_DOWN))   cameraRot = new Vector3f(-MOUSE_SENSITIVITY * 500f * dt, 0.0f, 0.0f);
             if(MouseListener.isDragging())  cameraRot = new Vector3f(-MouseListener.getDy() * MOUSE_SENSITIVITY, -MouseListener.getDx() * MOUSE_SENSITIVITY, 0.0f);
 
             //update player position
@@ -60,9 +61,15 @@ public class Input {
 
 
         //RELOAD CURRENT SCENE
-        //if(KeyListener.isKeyPressed(GLFW_KEY_R)){
-        //    scene.loadParticles();
-        //}
+        if(KeyListener.isKeyPressed(GLFW_KEY_R)){
+            scene.camera.getPosition().x = CAMERA_INIT_POS.x;
+            scene.camera.getPosition().y = CAMERA_INIT_POS.y;
+            scene.camera.getPosition().z = CAMERA_INIT_POS.z;
+
+            scene.camera.getRotation().x = CAMERA_INIT_ROT.x;
+            scene.camera.getRotation().y = CAMERA_INIT_ROT.y;
+            scene.camera.getRotation().z = CAMERA_INIT_ROT.z;
+        }
 
 
         MouseListener.endFrame();

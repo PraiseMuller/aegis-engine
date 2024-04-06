@@ -2,6 +2,7 @@ package core.renderer;
 
 import core.engine.Scene;
 import core.engine._2D.Scene2D;
+import core.entities.Material;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
 import core.engine.StateMachine;
@@ -13,6 +14,7 @@ import imgui.callback.ImStrConsumer;
 import imgui.callback.ImStrSupplier;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
+import org.joml.Vector3f;
 
 import static core.utils.SETTINGS.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -199,6 +201,7 @@ public class ImGuiLayer {
                 else ImGui.text("State: Stopped\n");
                 ImGui.text("Quads: " + Scene2D.pCount);
                 ImGui.text("Camera Position: " + Window.currentCamera().getPosition());
+                ImGui.text("Camera Rotation: " + Window.currentCamera().getRotation());
                 ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
 
 
@@ -220,6 +223,44 @@ public class ImGuiLayer {
                 if(ImGui.checkbox("Color invert", COLOR_INVERT)){
                     COLOR_INVERT = !COLOR_INVERT;
                 }
+
+                ImGui.separator();
+                if(ImGui.checkbox("Wire frame mode", WIRE_FRAME_MODE)){
+                    WIRE_FRAME_MODE = !WIRE_FRAME_MODE;
+                }
+
+                //LIGHTS
+                ImGui.separator();
+                //color picker, d-light direction
+                Vector3f dir = scene.getDirectionalLight().getDirection();
+                float[] dd = {dir.x, dir.y, dir.z};
+                ImGui.text("Directional light direction");
+                if(ImGui.sliderFloat3("##", dd, -1f, 1f)){
+                    scene.getDirectionalLight().setDirection(new Vector3f(dd[0], dd[1], dd[2]));
+                }
+
+                //d-light strength
+                float[] d = {scene.getDirectionalLight().getIntensity()};
+                ImGui.text("Directional light intensity");
+                if(ImGui.sliderFloat("##", d, 0.1f, 5.0f)){
+                    D_LIGHT_INTENSITY = d[0];
+                    scene.getDirectionalLight().setIntensity(d[0]);
+                }
+
+
+                //p-light strengths
+                ImGui.separator();
+                ImGui.pushID(11);
+                float[] p = {scene.getPointLights()[0].getIntensity()};
+                ImGui.text("Point Lights Intensity");
+                if(ImGui.sliderFloat("##", p, 0, 500)){
+                    for(int i = 0; i < scene.getPointLights().length; i++) {
+                        P_LIGHT_INTENSITY = p[0];
+                        scene.getPointLights()[i].setIntensity(p[0]);
+                    }
+                }
+                ImGui.popID();
+
         ImGui.render();
 
         endFrame();

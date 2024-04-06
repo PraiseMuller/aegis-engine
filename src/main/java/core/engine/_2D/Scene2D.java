@@ -26,7 +26,7 @@ public class Scene2D extends Scene {
     public void init(){
         this.camera = new Camera2D();
         this.player = new Player(PLAYER_INIT_POSITION);
-        this.sceneRenderer = new Renderer();
+        this.sceneRenderer = new Renderer(this);
     }
 
     @Override

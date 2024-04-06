@@ -1,6 +1,8 @@
 package core.engine;
 
 import core.entities.Player;
+import core.lighting.DirectionalLight;
+import core.lighting.PointLight;
 import core.renderer.Renderer;
 
 public abstract class Scene {
@@ -21,5 +23,13 @@ public abstract class Scene {
 
     public Camera getCamera(){
         return this.camera;
+    }
+
+    public DirectionalLight getDirectionalLight(){
+        return null;
+    }
+
+    public PointLight[] getPointLights(){
+        return null;
     }
 }

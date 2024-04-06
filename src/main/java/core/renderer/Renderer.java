@@ -3,18 +3,21 @@ package core.renderer;
 import core.engine.Scene;
 import core.engine._2D.BatchManager;
 import core.engine._2D.Particle;
+import core.engine._2D.Scene2D;
 import core.postprocess.PostProcessingPipeline;
 
 public class Renderer {
-    private final ImGuiLayer imGuiLayer;
-    private final BatchManager batchManager;
-    private final PostProcessingPipeline postProcessing;
+    private ImGuiLayer imGuiLayer = null;
+    private BatchManager batchManager = null;
+    private PostProcessingPipeline postProcessing = null;
 
-    public Renderer(){
+    public Renderer(Scene scene){
         this.imGuiLayer = new ImGuiLayer(Window.getWindow());
         this.imGuiLayer.initImGui();
-        this.batchManager = new BatchManager();
         this.postProcessing = new PostProcessingPipeline();
+
+        if(scene.getClass().isAssignableFrom(Scene2D.class))
+            this.batchManager = new BatchManager();
     }
 
     public void addVertex(Particle particle){
@@ -36,7 +39,7 @@ public class Renderer {
 
     public void dispose(){
         this.imGuiLayer.destroyImGui();
-        this.batchManager.dispose();
+        if(this.batchManager != null)   this.batchManager.dispose();
         this.postProcessing.dispose();
     }
 }

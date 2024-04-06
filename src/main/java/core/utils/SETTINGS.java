@@ -19,10 +19,12 @@ public final class SETTINGS {
     public static boolean BLACK_AND_WHITE_ON = false;
     public static boolean COLOR_INVERT = false;
     public static boolean GAMMA_CORRECT = true;
-    public static final Vector3f CAMERA_INIT_POS = new Vector3f(0.0f, 0.0f, 10.0f);
-    public static final Vector3f CAMERA_INIT_ROT = new Vector3f(0.0f, 0.0f, 0.0f);
+    public static boolean WIRE_FRAME_MODE = false;
+    public static final Vector3f CAMERA_INIT_POS = new Vector3f(-3.2E1f, 2.8E1f, 3.8E1f);
+    public static final Vector3f CAMERA_INIT_ROT = new Vector3f(1.9E1f, 3.9E1f, 0.0E0f);
     public static final Vector3f PLAYER_INIT_POSITION = new Vector3f(0.0f, 0.0f, 0.0f);
-
+    public static float P_LIGHT_INTENSITY = 100.0f;
+    public static float D_LIGHT_INTENSITY = 1.0f;
     public static final Vector4f BLACK = new Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
 
     private SETTINGS(){}

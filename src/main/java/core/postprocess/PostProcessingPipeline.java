@@ -25,14 +25,14 @@ public class PostProcessingPipeline {
 
         //draw scene into a fbo to extract the texture.
         this.fistPassframeBuffer.bind();
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        if(WIRE_FRAME_MODE) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         if(batchManager != null) batchManager.render();
-        scene.getPlayer().render();
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        scene.getPlayer().render(scene);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         //Process: 1. Bloom
         Texture sceneTexture = this.fistPassframeBuffer.getColorAttachment();
-        this.bloomRenderer.renderBloomTexture(sceneTexture, 0.0056f);
+        this.bloomRenderer.renderBloomTexture(sceneTexture, 0.0001f);
 
         //Apply: 1. Bloom
         defaultFramebuffer();
@@ -48,6 +48,9 @@ public class PostProcessingPipeline {
 
 
     private void defaultFramebuffer(){
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
         glClearColor(BLACK.x, BLACK.y, BLACK.z, BLACK.w);
