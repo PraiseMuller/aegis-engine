@@ -1,4 +1,4 @@
-package core.engine;
+package core.engine._2D;
 
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -6,7 +6,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;

@@ -1,7 +1,7 @@
 package core.renderer;
 
-import core.engine.Camera;
 import core.engine.Scene;
+import core.engine._2D.Scene2D;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
 import core.engine.StateMachine;
@@ -197,8 +197,8 @@ public class ImGuiLayer {
                 ImGui.text("Time Elapsed: "+ scene.timeElapsed + " sec.\n");
                 if(StateMachine.play()) ImGui.text("State: Running\n");
                 else ImGui.text("State: Stopped\n");
-                ImGui.text("Quads: " + Scene.pCount);
-                ImGui.text("Camera Position: " + Camera.getPosition());
+                ImGui.text("Quads: " + Scene2D.pCount);
+                ImGui.text("Camera Position: " + Window.currentCamera().getPosition());
                 ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
 
 

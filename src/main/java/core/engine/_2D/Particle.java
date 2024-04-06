@@ -1,4 +1,4 @@
-package core.engine;
+package core.engine._2D;
 
 import core.utils.MathUtils;
 import core.utils.PerlinNoise;

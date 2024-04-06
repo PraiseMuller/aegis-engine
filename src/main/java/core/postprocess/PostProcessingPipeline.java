@@ -1,9 +1,8 @@
 package core.postprocess;
 
-import core.engine.BatchManager;
 import core.engine.Scene;
+import core.engine._2D.BatchManager;
 import core.renderer.Texture;
-import core.utils.SETTINGS;
 
 import static core.utils.SETTINGS.*;
 import static core.utils.SETTINGS.BLACK;
@@ -27,7 +26,7 @@ public class PostProcessingPipeline {
         //draw scene into a fbo to extract the texture.
         this.fistPassframeBuffer.bind();
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        batchManager.render();
+        if(batchManager != null) batchManager.render();
         scene.getPlayer().render();
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

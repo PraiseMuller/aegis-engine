@@ -1,8 +1,9 @@
 package core.renderer;
 
 import core.engine.Camera;
-import core.engine.Scene;
 import core.engine.StateMachine;
+import core.engine._2D.Scene2D;
+import core.engine._3D.Scene3D;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
 import core.utils.AssetPool;
@@ -10,18 +11,18 @@ import core.utils.Time;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 
+import java.util.Objects;
+
 import static core.utils.SETTINGS.*;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
-import static org.lwjgl.opengl.GL14.glBlendEquation;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
     private static long window;
-    private static Scene sceneInstance = null;
+    private static Scene3D sceneInstance = null;
     private static Window instance = null;
 
     private Window(){
@@ -62,13 +63,6 @@ public class Window {
         //glfwSetJoystickButtonCallback(0, (joystick, button, action, mods) -> buttonCallback(button, action));
         //glfwSetJ
 
-        glfwSetWindowSizeCallback(window, (w, width, height)->{
-            setWidth(width);
-            setHeight(height);
-            glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
-            Camera.init();
-        });
-
         GLFWImage image = GLFWImage.malloc();
         GLFWImage.Buffer imagebf = GLFWImage.malloc(1);
         image.set(474, 474, AssetPool.loadImage("assets/images/icon.png"));
@@ -92,7 +86,14 @@ public class Window {
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        sceneInstance = new Scene();
+        sceneInstance = new Scene3D();
+
+        glfwSetWindowSizeCallback(window, (w, width, height)->{
+            setWidth(width);
+            setHeight(height);
+            glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
+            sceneInstance.init();
+        });
     }
 
     public static Window get(){
@@ -134,7 +135,7 @@ public class Window {
         //cleanup
         sceneInstance.dispose();
         glfwFreeCallbacks(window);
-        glfwSetErrorCallback(null).free();
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
         glfwDestroyWindow(window);
         glfwTerminate();
     }
@@ -148,12 +149,8 @@ public class Window {
     public void setHeight(int h){
         WIN_HEIGHT = h;
     }
-
-    public static int getWidth(){
-        return WIN_WIDTH;
-    }
-    public static int getHeight(){
-        return WIN_HEIGHT;
+    public static Camera currentCamera(){
+        return sceneInstance.getCamera();
     }
 
 }

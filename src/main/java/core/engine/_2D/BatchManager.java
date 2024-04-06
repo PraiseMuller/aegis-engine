@@ -1,6 +1,7 @@
-package core.engine;
+package core.engine._2D;
 
 import core.renderer.ShaderProgram;
+import core.renderer.Window;
 import core.utils.AssetPool;
 
 import java.util.ArrayList;
@@ -52,8 +53,8 @@ public class BatchManager {
 
     public void render(){
         this.shaderProgram.bind();
-        this.shaderProgram.uploadMat4fUniform("projectionMatrix", Camera.projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("viewMatrix", Camera.viewMatrix());
+        this.shaderProgram.uploadMat4fUniform("projectionMatrix", Window.currentCamera().projectionMatrix());
+        this.shaderProgram.uploadMat4fUniform("viewMatrix", Window.currentCamera().viewMatrix());
 
         for(DoubleBufferedBatch batch : batches){
             batch.render();

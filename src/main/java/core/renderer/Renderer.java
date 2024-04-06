@@ -1,6 +1,8 @@
 package core.renderer;
 
-import core.engine.*;
+import core.engine.Scene;
+import core.engine._2D.BatchManager;
+import core.engine._2D.Particle;
 import core.postprocess.PostProcessingPipeline;
 
 public class Renderer {

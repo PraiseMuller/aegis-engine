@@ -1,11 +1,10 @@
 package core.entities;
 
-import core.engine.Camera;
 import core.renderer.ShaderProgram;
+import core.renderer.Window;
 import core.utils.AssetPool;
 import core.utils.Primitives;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
@@ -21,8 +20,10 @@ import static org.lwjgl.opengl.GL30.*;
 public class Mesh {
     private final int vao, ebo, vbo;
     private final ShaderProgram shaderProgram;
+    private GameObject parentObject = null;
+    public Mesh(GameObject gameObject){
 
-    public Mesh(){
+        this.parentObject = gameObject;
 
         this.shaderProgram = new ShaderProgram();
         this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/player/vertex.glsl"));
@@ -67,17 +68,12 @@ public class Mesh {
         MemoryUtil.memFree(indices);
     }
 
-    public void update(Matrix4f modelMatrix) {
-        this.shaderProgram.bind();
-        this.shaderProgram.uploadMat4fUniform("modelMatrix", modelMatrix);
-        this.shaderProgram.unbind();
-    }
-
     public void draw(){
 
         this.shaderProgram.bind();
-        this.shaderProgram.uploadMat4fUniform("projectionMatrix", Camera.projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("viewMatrix", Camera.viewMatrix());
+        this.shaderProgram.uploadMat4fUniform("projectionMatrix", Window.currentCamera().projectionMatrix());
+        this.shaderProgram.uploadMat4fUniform("viewMatrix", Window.currentCamera().viewMatrix());
+        this.shaderProgram.uploadMat4fUniform("modelMatrix", Window.currentCamera().modelMatrix(this.parentObject));
         this.shaderProgram.uploadVec4fUniform("fColor", new Vector4f(0.2f,0.6f,0.4f,0.4f));
 
         glBindVertexArray(this.vao);

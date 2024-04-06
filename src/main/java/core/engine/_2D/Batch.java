@@ -1,4 +1,4 @@
-    package core.engine;
+    package core.engine._2D;
 
     import org.joml.Vector2f;
     import org.joml.Vector4f;

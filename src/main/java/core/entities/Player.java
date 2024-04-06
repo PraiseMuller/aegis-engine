@@ -4,25 +4,25 @@ import core.utils.Transform;
 import org.joml.Vector3f;
 
 public class Player {
-    private final Transform pTransform;
+    private final GameObject gameObject;
     private final Mesh mesh;
 
     public Player(Vector3f position){
-        this.pTransform = new Transform(position, 20.0f);
-        this.mesh = new Mesh();
+        this.gameObject = new GameObject(position, new Vector3f(0), new Vector3f(1.0f));
+        this.mesh = new Mesh(this.gameObject);
     }
 
     public void addPos(Vector3f value){
-        this.pTransform.position.add(value);
-        this.mesh.update(this.pTransform.getModelMatrix());
+        this.gameObject.position.add(value);
+        //this.mesh.update(this.pTransform.getModelMatrix());
     }
 
     public void follow(float x, float y) {
 
-        Vector3f dist = new Vector3f(x - this.pTransform.position.x, y - this.pTransform.position.y, this.pTransform.position.z);
+        Vector3f dist = new Vector3f(x - this.gameObject.position.x, y - this.gameObject.position.y, this.gameObject.position.z);
         dist.normalize();
 
-        this.pTransform.position.sub(dist);
+        this.gameObject.position.sub(dist);
 
 //        float worldX = c.x * Camera.getPosition().x / WIN_WIDTH;
 //        float worldY = c.y * Camera.getPosition().y / WIN_HEIGHT;
@@ -36,10 +36,10 @@ public class Player {
         this.mesh.dispose();
     }
     public Vector3f getPosition(){
-        return this.pTransform.position;
+        return this.gameObject.position;
     }
     public float getMovePower(){
-        return 500.0f;
+        return 4.0f;
     }
 }
 

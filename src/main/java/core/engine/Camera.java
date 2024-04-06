@@ -1,63 +1,69 @@
 package core.engine;
 
-import core.renderer.Window;
-import core.utils.MathUtils;
+import core.entities.GameObject;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import static core.utils.SETTINGS.*;
-import static core.utils.SETTINGS.Z_FAR;
+import static core.utils.SETTINGS.CAMERA_INIT_POS;
+import static core.utils.SETTINGS.CAMERA_INIT_ROT;
 
-public class Camera {
-    private static Matrix4f projection = null;
-    private static Matrix4f view = null;
-    private static final Vector3f position = new Vector3f(0.0f, 0.0f, 20.0f);
+public abstract class Camera {
+    protected Matrix4f projection = null;
+    protected Matrix4f view = null;
+    protected Matrix4f model = null;
+    protected final Vector3f position = new Vector3f(CAMERA_INIT_POS);
+    protected final Vector3f rotation = new Vector3f(CAMERA_INIT_ROT);;
 
-    private Camera(){}
 
-    public static void init(){
-        Camera.view = new Matrix4f();
-        Camera.projection = new Matrix4f();
+    //CONSTR
+    public Camera(){}
 
-        Camera.projection.identity();
-        Camera.projection.ortho(0f, WIN_WIDTH, WIN_HEIGHT, 0, Z_NEAR, Z_FAR, false);
 
-        Camera.updatePos(Camera.position);
+    //METHODS
+    public void movePosition(float offsetX, float offsetY, float offsetZ){}
+    public void moveRotation(float offsetX, float offsetY, float offsetZ){}
+    public void updateProjection(float fov, float width, float height, float zNear, float zFar){}
+
+    public Matrix4f projectionMatrix(){
+        return this.projection;
+    }
+    public Matrix4f viewMatrix(){
+        return this.view;
+    }
+    public Matrix4f modelMatrix(GameObject obj){
+        return this.model;
     }
 
-    public static void updatePos(Vector3f npos){
-        Vector3f camFront = new Vector3f(0.0f, 0.0f, -1.0f);
-        Vector3f camUp = new Vector3f(0.0f, 1.0f, 0.0f);
-
-        Camera.position.add(npos.x, npos.y, 0);
-        Camera.view.identity();
-        Camera.view.lookAt(new Vector3f(position.x, position.y, 30), camFront.add(position.x, position.y, 0), camUp);
+    public void smoothFollow(Vector3f position) {
     }
 
-    public static void smoothFollow(Vector3f c) {
-        float smoothing = 0.01f;
-        Vector3f desiredPosition = new Vector3f(c.x - Window.getWidth() / 2f, c.y - Window.getHeight() / 2f, c.z);
-
-        Camera.position.x = MathUtils.lerp(position.x, desiredPosition.x, smoothing);
-        Camera.position.y = MathUtils.lerp(position.y, desiredPosition.y, smoothing);
-        Camera.position.z = MathUtils.lerp(position.z, desiredPosition.z, smoothing);
-
-        Vector3f camFront = new Vector3f(position.x, position.y, -1);
-        Vector3f camUp = new Vector3f(0.0f, 1.0f, 0.0f);
-
-        Camera.view.identity();
-        Camera.view.lookAt(position, camFront, camUp);
+    public Vector3f getPosition() {
+        return this.position;
     }
 
-    public static Matrix4f projectionMatrix(){
-        return Camera.projection;
+    public void setPosition(Vector3f pos) {
+        this.position.x = pos.x;
+        this.position.y = pos.y;
+        this.position.z = pos.z;
     }
 
-    public static Matrix4f viewMatrix(){
-        return Camera.view;
+    public Vector3f getRotation() {
+        return this.rotation;
     }
 
-    public static Vector3f getPosition(){
-        return Camera.position;
+    public void setRotation(Vector3f rot) {
+        this.rotation.x = rot.x;
+        this.rotation.y = rot.y;
+        this.rotation.z = rot.z;
+    }
+
+    // lerp(a,b,t) = a + (b - a) * t
+    public static Vector3f lerp(Vector3f a, Vector3f b, float t){
+        //ease in and ease out
+        t = Math.abs(t - Math.min(t, 1 - (float) Math.exp(-0.000001f * Math.pow(t - 1, 3))));
+        //ease out
+        //t = Math.max(1 - (float) Math.exp(-1f * Math.pow(t - 1, 3)), 0);
+        return new Vector3f().add(b.sub(a)).mul(t).add(a);
     }
 }
+
