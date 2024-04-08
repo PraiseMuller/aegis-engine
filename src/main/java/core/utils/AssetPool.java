@@ -15,8 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 
-import static org.lwjgl.assimp.Assimp.aiImportFile;
-import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
+import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.stb.STBImage.stbi_load;
 
 public class AssetPool {
@@ -119,14 +118,52 @@ public class AssetPool {
         }
     }
 
-
-
-    private static float[] toFloatArray(ArrayList<Float> arrayList){
-        float[] fArr = new float[arrayList.size()];
-        for(int i = 0; i < fArr.length; i++){
-            fArr[i] = arrayList.get(i);
-        }
-        return fArr;
-    }
+//    const aiScene *tree = _importer.ReadFile(path, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+//
+//    // iterate over all meshes in this scene
+//    for (unsigned int m = 0; m < tree->mNumMeshes; ++m) {
+//        const aiMesh *mesh = tree->mMeshes[m];
+//            // iterate over all faces in this mesh
+//            for (unsigned int j = 0; j < mesh->mNumFaces; ++j) {
+//                auto const &face = mesh->mFaces[j];
+//                //normally you want just triangles, so iterate over all 3 vertices of the face:
+//                for (int k = 0; k < 3; ++k) {
+//                    // Now do the magic with 'face.mIndices[k]'
+//                    auto const &vertex = mesh->mVertices[face.mIndices[k]];
+//                    vertices.push_back(vertex.x);
+//                    vertices.push_back(vertex.y);
+//                    vertices.push_back(vertex.z);
+//
+//                    // Same for the normals.
+//                    auto const &normal = mesh->mNormals[face.mIndices[k]];
+//                    vertices.push_back(normal.x);
+//                    vertices.push_back(normal.y);
+//                    vertices.push_back(normal.z);
+//
+//                    // Color of material
+//                    // ...
+//
+//                    // And FINALLY: The UV coordinates!
+//                    if(mesh->HasTextureCoords(0)) {
+//                        // The following line fixed the issue for me now:
+//                        auto const &uv = mesh->mTextureCoords[0][face.mIndices[k]];
+//                        vertices.push_back(uv.x);
+//                        vertices.push_back(uv.y);
+//                    }
+//                }
+//            }
+//        }
+//
+//        as I can see here
+//
+//        glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+//        you draw all vertexes as triangles. And that is how you load indices from assimp
+//
+//        for (GLuint i = 0; i < mesh->mNumFaces; i++)
+//        {
+//            aiFace face = mesh->mFaces[i];
+//            for (GLuint j = 0; j < face.mNumIndices; j++)
+//                indices.push_back(face.mIndices[j]);
+//        }
 
 }

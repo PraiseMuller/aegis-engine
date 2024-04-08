@@ -17,8 +17,10 @@ import static org.lwjgl.opengl.GL30.*;
 public class BloomRenderer {
     private int vao;
     private final BloomFramebuffer bloomFramebuffer;
+    private final FrameBuffer extractBrightFramebuffer;
     private final ShaderProgram downsampleShader;
     private final ShaderProgram upsampleShader;
+    private final ShaderProgram extractBrightFragsShader;
 
     public BloomRenderer(int windowWidth, int windowHeight) {
         this.vao= 0;
@@ -27,7 +29,6 @@ public class BloomRenderer {
         this.downsampleShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
         this.downsampleShader.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/downsample_fragment.glsl"));
         this.downsampleShader.link();
-
         this.downsampleShader.createUniform("srcTexture");
         this.downsampleShader.createUniform("srcResolution");
 
@@ -36,9 +37,17 @@ public class BloomRenderer {
         this.upsampleShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
         this.upsampleShader.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/upsample_fragment.glsl"));
         this.upsampleShader.link();
-
         this.upsampleShader.createUniform("srcTexture");
         this.upsampleShader.createUniform("filterRadius");
+
+        this.extractBrightFragsShader = new ShaderProgram();
+        this.extractBrightFragsShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
+        this.extractBrightFragsShader.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/extract_bright_frags_fragment.glsl"));
+        this.extractBrightFragsShader.link();
+        this.extractBrightFragsShader.createUniform("srcTexture");
+        this.extractBrightFragsShader.createUniform("bloomIntensity");
+
+        this.extractBrightFramebuffer = new FrameBuffer(false);
 
         // Framebuffer
         int num_bloom_mips = 6; // Experiment with this value
@@ -47,11 +56,28 @@ public class BloomRenderer {
 
     public void renderBloomTexture(Texture srcTexture, float filterRadius) {
 
-        this.bloomFramebuffer.bind();
-        renderDownsamples(srcTexture);
-        renderUpsamples(filterRadius);
+        //Process: 1. Extract the brightest fragments in 'srcTexture', discard all fragments below some threshold, BLOOM_INTENSITY.
+        this.extractBrightFrags(srcTexture);
+        Texture sceneBrightFrags = this.extractBrightFramebuffer.getColorAttachment();
 
+        this.bloomFramebuffer.bind();
+        renderDownsamples(sceneBrightFrags);
+        renderUpsamples(filterRadius);
         this.bloomFramebuffer.unbind();
+    }
+
+    private void extractBrightFrags(Texture srcTexture){
+        this.extractBrightFramebuffer.bind();
+
+        srcTexture.bind();
+        this.extractBrightFragsShader.bind();
+        this.extractBrightFragsShader.uploadIntUniform("srcTexture", srcTexture.getBindLocation());
+        this.extractBrightFragsShader.uploadFloatUniform("bloomIntensity", BLOOM_INTENSITY);
+        this.renderQuad();
+        this.extractBrightFragsShader.unbind();
+        srcTexture.unbind();
+
+        this.extractBrightFramebuffer.unbind();
     }
 
     private void renderDownsamples(Texture texture) {

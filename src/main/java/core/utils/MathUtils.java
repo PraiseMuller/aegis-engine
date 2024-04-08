@@ -3,6 +3,8 @@ package core.utils;
 import org.joml.Math;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+
 public class MathUtils {
 
     private MathUtils(){}
@@ -15,5 +17,12 @@ public class MathUtils {
     }
     public static float getRandom(float max, float min){
         return (float) Math.random() * (max - min) + min;
+    }
+    private static float[] toFloatArray(ArrayList<Float> arrayList){
+        float[] fArr = new float[arrayList.size()];
+        for(int i = 0; i < fArr.length; i++){
+            fArr[i] = arrayList.get(i);
+        }
+        return fArr;
     }
 }

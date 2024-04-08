@@ -24,14 +24,14 @@ public class Scene3D extends Scene {
         this.player = new Player(PLAYER_INIT_POSITION);
 
         int n = 20;
-        this.pointLights[0] = new PointLight(new Vector3f(1,0,0), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY);
-        this.pointLights[1] = new PointLight(new Vector3f(0,1,0), new Vector3f(n, n, -n), P_LIGHT_INTENSITY);
-        this.pointLights[2] = new PointLight(new Vector3f(1), new Vector3f(-n,-n,-n), P_LIGHT_INTENSITY);
-        this.pointLights[3] = new PointLight(new Vector3f(1), new Vector3f(n,-n,-n), P_LIGHT_INTENSITY);
-        this.pointLights[4] = new PointLight(new Vector3f(1), new Vector3f(-n, n, n), P_LIGHT_INTENSITY);
-        this.pointLights[5] = new PointLight(new Vector3f(1), new Vector3f(n, n, n), P_LIGHT_INTENSITY);
-        this.pointLights[6] = new PointLight(new Vector3f(1), new Vector3f(-n,-n,n), P_LIGHT_INTENSITY);
-        this.pointLights[7] = new PointLight(new Vector3f(1), new Vector3f(n,-n,n), P_LIGHT_INTENSITY);
+        this.pointLights[0] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY);
+        this.pointLights[1] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY);
+        this.pointLights[2] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n,-n,-n), P_LIGHT_INTENSITY);
+        this.pointLights[3] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n,-n,-n), P_LIGHT_INTENSITY);
+        this.pointLights[4] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n, n, n), P_LIGHT_INTENSITY);
+        this.pointLights[5] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n, n, n), P_LIGHT_INTENSITY);
+        this.pointLights[6] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n,-n,n), P_LIGHT_INTENSITY);
+        this.pointLights[7] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n,-n,n), P_LIGHT_INTENSITY);
 
         this.directionalLight = new DirectionalLight(new Vector3f(0.1f, 0.1f, 0.2f), new Vector3f(1, 1, -1), D_LIGHT_INTENSITY);
     }

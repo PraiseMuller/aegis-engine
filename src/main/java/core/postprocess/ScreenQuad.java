@@ -29,6 +29,7 @@ public class ScreenQuad {
         this.shaderProgram.createUniform("blackAndWhiteOn");
         this.shaderProgram.createUniform("colorInvert");
         this.shaderProgram.createUniform("gammaCorrect");
+        this.shaderProgram.createUniform("hdrToneMap");
 
         float[] quadVertices = {
              1.0f, 1.0f,     1.0f, 1.0f,
@@ -76,11 +77,11 @@ public class ScreenQuad {
 
         bloomTexture.bind();
         this.shaderProgram.uploadIntUniform("bloomTexture", bloomTexture.getBindLocation());
-
         this.shaderProgram.uploadIntUniform("bloomOn", BLOOM_ON ? 1 : 0);
         this.shaderProgram.uploadIntUniform("blackAndWhiteOn", BLACK_AND_WHITE_ON ? 1 : 0);
         this.shaderProgram.uploadIntUniform("colorInvert", COLOR_INVERT ? 1 : 0);
         this.shaderProgram.uploadIntUniform("gammaCorrect", GAMMA_CORRECT ? 1 : 0);
+        this.shaderProgram.uploadIntUniform("hdrToneMap", HDR_TONE_MAP ? 1 : 0);
 
         //Enable additive blending
         glEnable(GL_BLEND);

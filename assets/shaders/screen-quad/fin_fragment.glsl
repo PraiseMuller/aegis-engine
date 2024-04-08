@@ -9,6 +9,7 @@ uniform int bloomOn;
 uniform int blackAndWhiteOn;
 uniform int colorInvert;
 uniform int gammaCorrect;
+uniform int hdrToneMap;
 
 //f(n) declarations
 vec3 aces(vec3 aColor);
@@ -27,8 +28,11 @@ void main(){
         hdrColor.rgb = pow(hdrColor.rgb, vec3(1.0 / gamma));
     }
 
+    vec3 result = hdrColor.rgb;
+
     //tone mapping
-    vec3 result = aces(hdrColor.rgb);
+    if(hdrToneMap == 1)
+        result = aces(result.rgb);
 
     if(blackAndWhiteOn == 1){
         float avg = (result.r + result.g + result.b) / 3.0f;

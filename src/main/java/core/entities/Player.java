@@ -9,7 +9,7 @@ public class Player {
     private final Mesh mesh;
 
     public Player(Vector3f position){
-        this.gameObject = new GameObject(position, new Vector3f(0,0,0), new Vector3f(10.0f));
+        this.gameObject = new GameObject(position, new Vector3f(90,0,0), new Vector3f(0.05f));
         this.mesh = new Mesh(this.gameObject);
     }
 
@@ -18,9 +18,9 @@ public class Player {
     }
 
     public void update(float dt){
-        //this.gameObject.rotation.x += dt * 15.0f;
-        this.gameObject.rotation.y += dt * 15.0f;
-        //this.gameObject.rotation.z += dt * 15.0f;
+        //this.gameObject.rotation.x += dt * 25.0f;
+        this.gameObject.rotation.z += dt * 25.0f;
+        //this.gameObject.rotation.z += dt * 25.0f;
     }
     public void follow(float x, float y) {
         Vector3f dist = new Vector3f(x - this.gameObject.position.x, y - this.gameObject.position.y, this.gameObject.position.z);

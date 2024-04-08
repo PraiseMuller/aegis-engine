@@ -20,6 +20,7 @@ public class Mesh {
     private final ShaderProgram shaderProgram;
     private GameObject parentObject = null;
     private Material material = null;
+
     public Mesh(GameObject gameObject){
 
         this.parentObject = gameObject;
@@ -43,8 +44,8 @@ public class Mesh {
         this.vao = glGenVertexArrays();
         glBindVertexArray(this.vao);
 
-        //get shape
-        float[] floats = AssetPool.loadAiScece("assets/models/gwyn.obj");
+        //Load model
+        float[] floats = AssetPool.loadAiScece("D:\\Models\\Infinian lineage series\\source\\Mon_Infinian_001_Skeleton.FBX");
         FloatBuffer modelVertices = MemoryUtil.memAllocFloat(floats.length);
         modelVertices.put(floats).flip();
 

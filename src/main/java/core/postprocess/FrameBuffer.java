@@ -6,21 +6,26 @@ import static core.utils.SETTINGS.*;
 import static org.lwjgl.opengl.GL30.*;
 
 public class FrameBuffer {
-    private final int fbo_id, rbo_id;
+    private final int fbo_id;
+    private int rbo_id = 0;
+    private final boolean hasRenderBuffer;
     private final Texture texture;
 
-    public FrameBuffer(){
+    public FrameBuffer(boolean hasRenderBuffer){
         this.fbo_id = glGenFramebuffers();
         glBindFramebuffer(GL_FRAMEBUFFER, this.fbo_id);
 
-        this.rbo_id = glGenRenderbuffers();
-        glBindRenderbuffer(GL_RENDERBUFFER, this.rbo_id);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, WIN_WIDTH, WIN_HEIGHT);
+        this.hasRenderBuffer = hasRenderBuffer;
+        if(this.hasRenderBuffer) {
+            this.rbo_id = glGenRenderbuffers();
+            glBindRenderbuffer(GL_RENDERBUFFER, this.rbo_id);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, WIN_WIDTH, WIN_HEIGHT);
+        }
 
         //attach frame buffer attachments
         this.texture = new Texture(WIN_WIDTH, WIN_HEIGHT, 2, true);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.texture.getId(), 0);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_id);
+        if(this.hasRenderBuffer) glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_id);
 
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             throw new RuntimeException("ERROR::FRAME-BUFFER::Frame buffer is not complete!");
@@ -29,14 +34,26 @@ public class FrameBuffer {
     }
 
     public void bind(){
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        if(hasRenderBuffer) {
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, this.fbo_id);
         glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
         glClearColor(BLACK.x, BLACK.y, BLACK.z, BLACK.w);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
+        if(hasRenderBuffer) glClear(GL_DEPTH_BUFFER_BIT);
+    }
+
+    public void unbind(){
+        if(hasRenderBuffer) {
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE);
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     public Texture getColorAttachment(){
@@ -46,6 +63,6 @@ public class FrameBuffer {
     public void dispose(){
         this.texture.dispose();
         glDeleteFramebuffers(this.fbo_id);
-        glDeleteRenderbuffers(this.rbo_id);
+        if(hasRenderBuffer) glDeleteRenderbuffers(this.rbo_id);
     }
 }

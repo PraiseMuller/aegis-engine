@@ -210,9 +210,25 @@ public class ImGuiLayer {
                 }
 
                 ImGui.separator();
+                if(ImGui.checkbox("HDR tone-map", HDR_TONE_MAP)){
+                    HDR_TONE_MAP = !HDR_TONE_MAP;
+                }
+
+                ImGui.separator();
                 if(ImGui.checkbox("Bloom", BLOOM_ON)){
                     BLOOM_ON = !BLOOM_ON;
                 }
+
+                //Bloom Intensity
+                ImGui.separator();
+                ImGui.pushID(153);
+                float[] bloomArr = {BLOOM_INTENSITY};
+                ImGui.text("Bloom intensity");
+                if(ImGui.sliderFloat("##", bloomArr, 0.03f, 1.0f)){
+                        BLOOM_INTENSITY = bloomArr[0];
+                }
+                ImGui.popID();
+
 
                 ImGui.separator();
                 if(ImGui.checkbox("Black and White", BLACK_AND_WHITE_ON)){

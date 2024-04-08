@@ -16,7 +16,7 @@ public class PostProcessingPipeline {
     private final ScreenQuad fScreenQuad;    // <-----the final screen;
 
     public PostProcessingPipeline(){
-        this.fistPassframeBuffer = new FrameBuffer();
+        this.fistPassframeBuffer = new FrameBuffer(true);
         this.bloomRenderer = new BloomRenderer(WIN_WIDTH, WIN_HEIGHT);
         this.fScreenQuad = new ScreenQuad();
     }
@@ -29,6 +29,7 @@ public class PostProcessingPipeline {
         if(batchManager != null) batchManager.render();
         scene.getPlayer().render(scene);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        this.fistPassframeBuffer.unbind();
 
         //Process: 1. Bloom
         Texture sceneTexture = this.fistPassframeBuffer.getColorAttachment();

@@ -12,5 +12,5 @@ uniform Material material;
 uniform float intensity;
 
 void main(){
-    color = vec4(material.color * intensity / 5, 1.0f);
+    color = vec4(material.color * intensity, 1.0f);
 }

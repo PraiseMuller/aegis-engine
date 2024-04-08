@@ -9,7 +9,7 @@ public class Material {
     public Material(){
         this.metallicVal = 0.0f;
         this.roughnessVal = 0.2f;
-        this.color = new Vector3f(0.5f,0.5f, 0.7f);
+        this.color = new Vector3f(0.7f);
     }
     public Material(Vector3f color){
         this.metallicVal = 1.0f;
