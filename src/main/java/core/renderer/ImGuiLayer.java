@@ -1,11 +1,10 @@
 package core.renderer;
 
 import core.engine.Scene;
-import core.engine._2D.Scene2D;
-import core.entities.Material;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
 import core.engine.StateMachine;
+import core.utils.Time;
 import imgui.ImFontAtlas;
 import imgui.ImFontConfig;
 import imgui.ImGui;
@@ -196,10 +195,9 @@ public class ImGuiLayer {
         ImGui.newFrame();
                 //game.updateImgui(dt);
                 ImGui.text("FPS: " + 1/dt);
-                ImGui.text("Time Elapsed: "+ scene.timeElapsed + " sec.\n");
+                ImGui.text("Time Elapsed: "+ Time.get() + " sec.\n");
                 if(StateMachine.play()) ImGui.text("State: Running\n");
                 else ImGui.text("State: Stopped\n");
-                ImGui.text("Quads: " + Scene2D.pCount);
                 ImGui.text("Camera Position: " + Window.currentCamera().getPosition());
                 ImGui.text("Camera Rotation: " + Window.currentCamera().getRotation());
                 ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
@@ -267,13 +265,10 @@ public class ImGuiLayer {
                 //p-light strengths
                 ImGui.separator();
                 ImGui.pushID(11);
-                float[] p = {scene.getPointLights()[0].getIntensity()};
+                float[] p = {P_LIGHT_INTENSITY};
                 ImGui.text("Point Lights Intensity");
                 if(ImGui.sliderFloat("##", p, 0, 500)){
-                    for(int i = 0; i < scene.getPointLights().length; i++) {
-                        P_LIGHT_INTENSITY = p[0];
-                        scene.getPointLights()[i].setIntensity(p[0]);
-                    }
+                    P_LIGHT_INTENSITY = p[0];
                 }
                 ImGui.popID();
 

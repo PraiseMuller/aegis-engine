@@ -13,7 +13,7 @@ public final class SETTINGS {
     public static final float Z_NEAR = 0.01f;
     public static final float Z_FAR = 1000f;
     public static final float FOV = (float) (120);
-    public static final float MOUSE_SENSITIVITY = 0.03f;
+    public static final float MOUSE_SENSITIVITY = 30f;
     public static final Layout DEFAULT_LAYOUT = new VerticalLayout();
     public static boolean BLOOM_ON = true;
     public static boolean BLACK_AND_WHITE_ON = false;
@@ -21,9 +21,9 @@ public final class SETTINGS {
     public static boolean GAMMA_CORRECT = true;
     public static boolean HDR_TONE_MAP = true;
     public static boolean WIRE_FRAME_MODE = false;
-    public static final Vector3f CAMERA_INIT_POS = new Vector3f(-3.2E1f, 3.8E1f, 3.8E1f);
-    public static final Vector3f CAMERA_INIT_ROT = new Vector3f(2.4E1f, 3.9E1f, 0.0E0f);
-    public static final Vector3f PLAYER_INIT_POSITION = new Vector3f(0.0f, 0.0f, 0.0f);
+    public static final Vector3f CAMERA_INIT_POS = new Vector3f(-1.54E2f, 8.38E1f, 1.27E2f);
+    public static final Vector3f CAMERA_INIT_ROT = new Vector3f(1.9E1f, 5.56E1f, 0.0E0f);
+    public static final Vector3f GAME_OBJ_INIT_POSITION = new Vector3f(0.0f, 0.0f, 0.0f);
     public static float P_LIGHT_INTENSITY = 150.0f;
     public static float D_LIGHT_INTENSITY = 1.0f;
     public static float BLOOM_INTENSITY = 0.9f;

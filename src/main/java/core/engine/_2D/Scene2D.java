@@ -2,12 +2,12 @@ package core.engine._2D;
 
 import core.engine.Scene;
 import core.engine.StateMachine;
-import core.entities.Player;
+import core.entities.GameObject;
 import core.inputs.Input;
 import core.renderer.Renderer;
+import core.utils.AssetPool;
 import org.joml.Math;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +25,17 @@ public class Scene2D extends Scene {
     @Override
     public void init(){
         this.camera = new Camera2D();
-        this.player = new Player(PLAYER_INIT_POSITION);
         this.sceneRenderer = new Renderer(this);
+
+        //INITIALIZE AND ADD GAME-OBJECTS TO SCENE
+        this.gameObjects = new ArrayList<>();
+        AssetPool.initializeAllEngineStuff(this.gameObjects, null);
     }
 
     @Override
     public void updateInputs(float dt){
         Input.update(dt, this);
-        this.camera.smoothFollow(player.getPosition());
+        //this.camera.smoothFollow(player.getPosition());
     }
 
     @Override
@@ -60,17 +63,18 @@ public class Scene2D extends Scene {
             else
                 this.sceneRenderer.updateVertex(particle, i);
         }
-
-        this.timeElapsed += 0.01f;
     }
     @Override
     public void render(float dt){
-        this.sceneRenderer.render(this, dt);
+        //this.sceneRenderer.render(this, dt);
     }
 
     @Override
     public void dispose(){
         this.sceneRenderer.dispose();
-        this.player.dispose();
+
+        for (GameObject gameObject : this.gameObjects){
+            gameObject.dispose();
+        }
     }
 }

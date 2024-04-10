@@ -13,17 +13,9 @@ import static core.utils.SETTINGS.Z_FAR;
 public class Camera2D extends Camera {
 
     public Camera2D(){
-        this.init();
-    }
-
-    public void init(){
-        this.view = new Matrix4f();
-        this.model = new Matrix4f();
-        this.projection = new Matrix4f();
-
+        super();
         this.projection.identity();
         this.projection.ortho(0f, WIN_WIDTH, WIN_HEIGHT, 0, Z_NEAR, Z_FAR, false);
-
     }
 
     @Override
@@ -57,12 +49,11 @@ public class Camera2D extends Camera {
     @Override
     public Matrix4f modelMatrix(GameObject obj){
         this.model.identity();
-
-        this.model.identity().translate(obj.position)
-                .rotateX((float)Math.toRadians(-obj.rotation.x))
-                .rotateY((float)Math.toRadians(-obj.rotation.y))
-                .rotateZ((float)Math.toRadians(-obj.rotation.z))
-                .scale(obj.scale);
+        this.model.identity().translate(obj.getPosition())
+                .rotateX((float)Math.toRadians(-obj.getRotation().x))
+                .rotateY((float)Math.toRadians(-obj.getRotation().y))
+                .rotateZ((float)Math.toRadians(-obj.getRotation().z))
+                .scale(obj.getScale());
 
         return this.model;  // this.view.mul(this.model);
     }

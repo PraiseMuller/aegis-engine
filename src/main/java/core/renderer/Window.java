@@ -2,7 +2,6 @@ package core.renderer;
 
 import core.engine.Camera;
 import core.engine.StateMachine;
-import core.engine._2D.Scene2D;
 import core.engine._3D.Scene3D;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
@@ -81,8 +80,6 @@ public class Window {
         glfwShowWindow(window);
         createCapabilities();
 
-        sceneInstance = new Scene3D();
-
         glfwSetWindowSizeCallback(window, (w, width, height)->{
             setWidth(width);
             setHeight(height);
@@ -105,6 +102,8 @@ public class Window {
         float dt = 0;
         float startTime = Time.get();
         float endTime;
+
+        sceneInstance = new Scene3D();
 
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();

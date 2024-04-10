@@ -8,22 +8,25 @@ import static core.utils.SETTINGS.CAMERA_INIT_POS;
 import static core.utils.SETTINGS.CAMERA_INIT_ROT;
 
 public abstract class Camera {
-    protected Matrix4f projection = null;
-    protected Matrix4f view = null;
-    protected Matrix4f model = null;
-    protected final Vector3f position = new Vector3f(CAMERA_INIT_POS);
-    protected final Vector3f rotation = new Vector3f(CAMERA_INIT_ROT);;
-
+    protected final Matrix4f projection;
+    protected final Matrix4f view;
+    protected final Matrix4f model;
+    protected final Vector3f position;
+    protected final Vector3f rotation;
 
     //CONSTR
-    public Camera(){}
-
+    public Camera(){
+        this.position = new Vector3f(CAMERA_INIT_POS);
+        this.rotation = new Vector3f(CAMERA_INIT_ROT);
+        this.model = new Matrix4f();
+        this.view = new Matrix4f();
+        this.projection = new Matrix4f();
+    }
 
     //METHODS
     public void movePosition(float offsetX, float offsetY, float offsetZ){}
     public void moveRotation(float offsetX, float offsetY, float offsetZ){}
     public void updateProjection(float fov, float width, float height, float zNear, float zFar){}
-
     public Matrix4f projectionMatrix(){
         return this.projection;
     }
@@ -33,10 +36,8 @@ public abstract class Camera {
     public Matrix4f modelMatrix(GameObject obj){
         return this.model;
     }
-
     public void smoothFollow(Vector3f position) {
     }
-
     public Vector3f getPosition() {
         return this.position;
     }
@@ -50,7 +51,6 @@ public abstract class Camera {
     public Vector3f getRotation() {
         return this.rotation;
     }
-
     public void setRotation(Vector3f rot) {
         this.rotation.x = rot.x;
         this.rotation.y = rot.y;

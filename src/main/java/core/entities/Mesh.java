@@ -4,6 +4,8 @@ import core.engine.Scene;
 import core.renderer.ShaderProgram;
 import core.renderer.Window;
 import core.utils.AssetPool;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -15,37 +17,43 @@ import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.memFree;
 
 public class Mesh {
+
     private int indicesSize = 0;
-    private final int vao, vbo;
-    private final ShaderProgram shaderProgram;
-    private GameObject parentObject = null;
+    private int vao;
+    private int vbo;
+    private ShaderProgram shaderProgram;
     private Material material = null;
 
-    public Mesh(GameObject gameObject){
+    public Mesh(String modelFileLocation, Vector3f color){
+        this.material = new Material(color);
+        this.init(modelFileLocation);
+    }
 
-        this.parentObject = gameObject;
+    public Mesh(String modelFileLocation){
         this.material = new Material();
+        this.init(modelFileLocation);
+    }
 
+    private void init(String modelFileLocation){
         this.shaderProgram = new ShaderProgram();
-        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/player/vertex.glsl"));
-        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/player/fragment.glsl"));
+        this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/base/vertex.glsl"));
+        this.shaderProgram.createFragmentShader(AssetPool.getShader("assets/shaders/base/fragment.glsl"));
         this.shaderProgram.link();
 
         this.shaderProgram.createUniform("projectionMatrix");
         this.shaderProgram.createUniform("viewMatrix");
         this.shaderProgram.createUniform("modelMatrix");
         this.shaderProgram.createMaterialUniform("material");
-
         this.shaderProgram.createDirectionalLightUniform("directionalLight");
-        for(int i = 0; i < 8; i++)
-            this.shaderProgram.createPointLightUniform("pointLight["+i+"]");
-
+//        for(int i = 0; i < 4; i++) {
+//            this.shaderProgram.createPointLightUniform("pointLight[" + i + "]");
+//        }
 
         this.vao = glGenVertexArrays();
         glBindVertexArray(this.vao);
 
         //Load model
-        float[] floats = AssetPool.loadAiScece("D:\\Models\\Infinian lineage series\\source\\Mon_Infinian_001_Skeleton.FBX");
+        float[] floats = AssetPool.loadAiScece(modelFileLocation);
         FloatBuffer modelVertices = MemoryUtil.memAllocFloat(floats.length);
         modelVertices.put(floats).flip();
 
@@ -67,17 +75,16 @@ public class Mesh {
         memFree(modelVertices);
     }
 
-    public void draw(Scene scene){
+    public void render(Scene scene, GameObject gameObject){
 
         this.shaderProgram.bind();
-        this.shaderProgram.uploadMat4fUniform("projectionMatrix", Window.currentCamera().projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("viewMatrix", Window.currentCamera().viewMatrix());
-        this.shaderProgram.uploadMat4fUniform("modelMatrix", Window.currentCamera().modelMatrix(this.parentObject));
+        this.shaderProgram.uploadMat4fUniform("projectionMatrix", scene.camera.projectionMatrix());
+        this.shaderProgram.uploadMat4fUniform("viewMatrix",scene.camera.viewMatrix());
+        this.shaderProgram.uploadMat4fUniform("modelMatrix", scene.camera.modelMatrix(gameObject));
         this.shaderProgram.setUniform("material", this.material);
-        this.shaderProgram.setUniform("directionalLight", scene.getDirectionalLight().toViewSpace( Window.currentCamera().viewMatrix()));
-
-        for(int i = 0; i < 8; i++)
-            this.shaderProgram.setUniform("pointLight["+i+"]", scene.getPointLights()[i].toViewSpace( Window.currentCamera().viewMatrix() ));
+        this.shaderProgram.setUniform("directionalLight", scene.getDirectionalLight().toViewSpace( scene.camera.viewMatrix()));
+//        for(int i = 0; i < 4; i++)
+//            this.shaderProgram.setUniform("pointLight["+i+"]", scene.getPointLights().get(i).toViewSpace( scene.camera.viewMatrix() ));
 
         glBindVertexArray(this.vao);
         glEnableVertexAttribArray(0);

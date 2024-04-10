@@ -3,7 +3,7 @@ package core.entities;
 import org.joml.Vector3f;
 
 public class Material {
-    private Vector3f color;
+    private final Vector3f color;
     private float metallicVal, roughnessVal;
 
     public Material(){
@@ -11,14 +11,17 @@ public class Material {
         this.roughnessVal = 0.2f;
         this.color = new Vector3f(0.7f);
     }
+
     public Material(Vector3f color){
-        this.metallicVal = 1.0f;
+        this.metallicVal = 0.0f;
         this.roughnessVal = 0.2f;
         this.color = color;
     }
 
     public void setColor(Vector3f color){
-        this.color = color;
+        this.color.x = color.x;
+        this.color.y = color.y;
+        this.color.z = color.z;
     }
     public Vector3f getColor() {
         return color;

@@ -8,9 +8,7 @@ import org.joml.Vector3f;
 public class Camera3D extends Camera {
 
     public Camera3D(float fov, float width, float height, float zNear, float zFar){
-        this.view = new Matrix4f();
-        this.model = new Matrix4f();
-        this.projection = new Matrix4f();
+        super();
         this.projection.identity();
         this.projection.perspective(fov,width / height, zNear, zFar);
     }
@@ -24,37 +22,36 @@ public class Camera3D extends Camera {
     @Override
     public void movePosition(float offsetX, float offsetY, float offsetZ) {
         if ( offsetZ != 0 ) {
-            position.x += (float)Math.sin(Math.toRadians(rotation.y)) * -1.0f * offsetZ;
-            position.z += (float)Math.cos(Math.toRadians(rotation.y)) * offsetZ;
+            this.position.x += (float)Math.sin(Math.toRadians(this.rotation.y)) * -1.0f * offsetZ;
+            this.position.z += (float)Math.cos(Math.toRadians(this.rotation.y)) * offsetZ;
         }
 
         if ( offsetX != 0) {
-            position.x += (float)Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offsetX;
-            position.z += (float)Math.cos(Math.toRadians(rotation.y - 90)) * offsetX;
+            this.position.x += (float)Math.sin(Math.toRadians(this.rotation.y - 90)) * -1.0f * offsetX;
+            this.position.z += (float)Math.cos(Math.toRadians(this.rotation.y - 90)) * offsetX;
         }
-        position.y += offsetY;
+        this.position.y += offsetY;
     }
 
     @Override
     public void moveRotation(float offsetX, float offsetY, float offsetZ) {
-        rotation.x += offsetX;
-        rotation.y += offsetY;
-        rotation.z += offsetZ;
+        this.rotation.x += offsetX;
+        this.rotation.y += offsetY;
+        this.rotation.z += offsetZ;
 
         float maxAngle = (float) Math.toDegrees(90);
-        if(rotation.x > maxAngle) rotation.x = maxAngle;
-        if(rotation.x < -maxAngle) rotation.x = -maxAngle;
+        if(this.rotation.x > maxAngle) this.rotation.x = maxAngle;
+        if(this.rotation.x < -maxAngle) this.rotation.x = -maxAngle;
     }
 
     @Override
     public Matrix4f modelMatrix(GameObject obj){
         this.model.identity();
-
-        this.model.identity().translate(obj.position)
-                .rotateX((float)Math.toRadians(-obj.rotation.x))
-                .rotateY((float)Math.toRadians(-obj.rotation.y))
-                .rotateZ((float)Math.toRadians(-obj.rotation.z))
-                .scale(obj.scale);
+        this.model.translate(obj.getPosition())
+                   .rotateX((float)Math.toRadians(-obj.getRotation().x))
+                   .rotateY((float)Math.toRadians(-obj.getRotation().y))
+                   .rotateZ((float)Math.toRadians(-obj.getRotation().z))
+                   .scale(obj.getScale());
 
         return this.model;  // this.view.mul(this.model);
     }
@@ -64,11 +61,11 @@ public class Camera3D extends Camera {
         this.view.identity();
 
         // First do the rotation so camera rotates over its position
-        view.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
-                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
+        this.view.rotate((float)Math.toRadians(this.rotation.x), new Vector3f(1, 0, 0))
+                .rotate((float)Math.toRadians(this.rotation.y), new Vector3f(0, 1, 0));
 
         // Then do the translation
-        view.translate(-position.x, -position.y, -position.z);
-        return view;
+        this.view.translate(-this.position.x, -this.position.y, -this.position.z);
+        return this.view;
     }
 }

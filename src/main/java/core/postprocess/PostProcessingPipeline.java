@@ -2,6 +2,8 @@ package core.postprocess;
 
 import core.engine.Scene;
 import core.engine._2D.BatchManager;
+import core.engine._3D.Scene3D;
+import core.entities.GameObject;
 import core.renderer.Texture;
 
 import static core.utils.SETTINGS.*;
@@ -27,7 +29,9 @@ public class PostProcessingPipeline {
         this.fistPassframeBuffer.bind();
         if(WIRE_FRAME_MODE) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         if(batchManager != null) batchManager.render();
-        scene.getPlayer().render(scene);
+        for(GameObject gameObject : scene.getGameObjects()) {
+            gameObject.render(scene);
+        }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         this.fistPassframeBuffer.unbind();
 

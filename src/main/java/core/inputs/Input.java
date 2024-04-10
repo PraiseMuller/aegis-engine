@@ -2,9 +2,7 @@ package core.inputs;
 
 import core.engine.Scene;
 import core.engine.StateMachine;
-import core.engine._2D.Scene2D;
 import core.renderer.Window;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static core.utils.SETTINGS.*;
@@ -15,41 +13,36 @@ public class Input {
     private Input(){}
 
     public static void update(float dt, Scene scene){
+        Vector3f delta = new Vector3f();
+        Vector3f cameraRot = new Vector3f();
 
-        if(scene.getPlayer() != null) {
+        //CAM POS
+        float cameraMoveSpeed = 20.0f;
+        if (KeyListener.isKeyPressed(GLFW_KEY_W))   delta.add(new Vector3f(0.0f, 0.0f, -cameraMoveSpeed * dt));
+        if (KeyListener.isKeyPressed(GLFW_KEY_S))   delta.add(new Vector3f(0.0f, 0.0f, cameraMoveSpeed * dt));
 
-            float playerMovePower = scene.getPlayer().getMovePower();
-            Vector3f delta = new Vector3f();
-            Vector3f cameraRot = new Vector3f();
+        if (KeyListener.isKeyPressed(GLFW_KEY_D))   delta.add(new Vector3f(cameraMoveSpeed * dt, 0.0f, 0.0f));
+        if (KeyListener.isKeyPressed(GLFW_KEY_A))   delta.add(new Vector3f(-cameraMoveSpeed * dt, 0.0f, 0.0f));
 
-            //CAM POS
-            if (KeyListener.isKeyPressed(GLFW_KEY_W))   delta.add(new Vector3f(0.0f, 0.0f, -playerMovePower * dt));
-            if (KeyListener.isKeyPressed(GLFW_KEY_S))   delta.add(new Vector3f(0.0f, 0.0f, playerMovePower * dt));
+        if (KeyListener.isKeyPressed(GLFW_KEY_Q))   delta.add(new Vector3f(0.0f, cameraMoveSpeed * dt, 0.0f));
+        if (KeyListener.isKeyPressed(GLFW_KEY_E))   delta.add(new Vector3f(0.0f, -cameraMoveSpeed * dt, 0.0f));
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_D))   delta.add(new Vector3f(playerMovePower * dt, 0.0f, 0.0f));
-            if (KeyListener.isKeyPressed(GLFW_KEY_A))   delta.add(new Vector3f(-playerMovePower * dt, 0.0f, 0.0f));
+        //CAM ROT
+        if (KeyListener.isKeyPressed(GLFW_KEY_LEFT))    cameraRot.y = -MOUSE_SENSITIVITY * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT))   cameraRot.y = MOUSE_SENSITIVITY * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_UP))     cameraRot.x = MOUSE_SENSITIVITY * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_DOWN))   cameraRot.x = -MOUSE_SENSITIVITY * dt;
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_Q))   delta.add(new Vector3f(0.0f, playerMovePower * dt, 0.0f));
-            if (KeyListener.isKeyPressed(GLFW_KEY_E))   delta.add(new Vector3f(0.0f, -playerMovePower * dt, 0.0f));
-
-            //CAM ROT
-            if (KeyListener.isKeyPressed(GLFW_KEY_LEFT))    cameraRot = new Vector3f(0.0f, -MOUSE_SENSITIVITY * 800f * dt, 0.0f);
-            if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT))   cameraRot = new Vector3f(0.0f, MOUSE_SENSITIVITY * 800f * dt, 0.0f);
-            if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_UP))     cameraRot = new Vector3f(MOUSE_SENSITIVITY * 500f * dt, 0.0f, 0.0f);
-            if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_DOWN))   cameraRot = new Vector3f(-MOUSE_SENSITIVITY * 500f * dt, 0.0f, 0.0f);
-            if(MouseListener.isDragging())  cameraRot = new Vector3f(-MouseListener.getDy() * MOUSE_SENSITIVITY, -MouseListener.getDx() * MOUSE_SENSITIVITY, 0.0f);
-
-            //update player position
-            if(scene.getClass().isAssignableFrom(Scene2D.class)){
-                //2D
-                scene.getPlayer().addPos(delta);
-            }
-            else {
-                //3D
-                scene.getCamera().movePosition(delta.x, -delta.y, delta.z);
-                scene.getCamera().moveRotation(cameraRot.x, cameraRot.y, cameraRot.z);
-            }
+        if(MouseListener.isDragging()) {
+            cameraRot.x = -MouseListener.getDy() * MOUSE_SENSITIVITY / 1000.0f;
+            cameraRot.y = -MouseListener.getDx() * MOUSE_SENSITIVITY / 1000.0f;
+            cameraRot.z = 0.0f;
         }
+
+        //MOVE CAMERA
+        scene.getCamera().movePosition(delta.x, -delta.y, delta.z);
+        scene.getCamera().moveRotation(cameraRot.x, cameraRot.y, cameraRot.z);
+
 
         if(KeyListener.isKeyPressed(GLFW_KEY_ESCAPE)){
             glfwSetWindowShouldClose(Window.getWindow(), true);
@@ -74,17 +67,4 @@ public class Input {
 
         MouseListener.endFrame();
     }
-
-    public static boolean mouseLeftClicked(){
-        return MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_1);
-    }
-
-    public static boolean mouseRightClicked() {
-        return MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_2);
-    }
-    public static boolean isDragging(){ return MouseListener.isDragging(); }
-    public static Vector2f getMousePosition(){
-        return new Vector2f(MouseListener.getX(), MouseListener.getY());
-    }
-
 }

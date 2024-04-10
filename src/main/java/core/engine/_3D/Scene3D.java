@@ -1,39 +1,40 @@
 package core.engine._3D;
 
+import core.engine.Camera;
 import core.engine.Scene;
-import core.entities.Player;
+import core.entities.GameObject;
 import core.inputs.Input;
 import core.lighting.DirectionalLight;
 import core.lighting.PointLight;
 import core.renderer.Renderer;
+import core.utils.AssetPool;
 import org.joml.Vector3f;
+
+import java.util.ArrayList;
 
 import static core.utils.SETTINGS.*;
 
 public class Scene3D extends Scene {
-    private DirectionalLight directionalLight;
-    private PointLight[] pointLights = new PointLight[8];
+    private DirectionalLight directionalLight = null;
+    private ArrayList<PointLight> pointLights = null;
+    private ArrayList<GameObject> gameObjects = null;
 
     public Scene3D(){
+        super();
         this.init();
     }
+
     @Override
     public void init() {
         this.sceneRenderer = new Renderer(this);
         this.camera = new Camera3D(FOV, WIN_WIDTH, WIN_HEIGHT, Z_NEAR, Z_FAR);
-        this.player = new Player(PLAYER_INIT_POSITION);
 
-        int n = 20;
-        this.pointLights[0] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY);
-        this.pointLights[1] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY);
-        this.pointLights[2] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n,-n,-n), P_LIGHT_INTENSITY);
-        this.pointLights[3] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n,-n,-n), P_LIGHT_INTENSITY);
-        this.pointLights[4] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n, n, n), P_LIGHT_INTENSITY);
-        this.pointLights[5] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n, n, n), P_LIGHT_INTENSITY);
-        this.pointLights[6] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(-n,-n,n), P_LIGHT_INTENSITY);
-        this.pointLights[7] = new PointLight(new Vector3f(0.4f,0.7f,0.9f), new Vector3f(n,-n,n), P_LIGHT_INTENSITY);
-
+        this.pointLights = new ArrayList<>();
         this.directionalLight = new DirectionalLight(new Vector3f(0.1f, 0.1f, 0.2f), new Vector3f(1, 1, -1), D_LIGHT_INTENSITY);
+
+        //INITIALIZE AND ADD GAME-OBJECTS TO SCENE
+        this.gameObjects = new ArrayList<>();
+        AssetPool.initializeAllEngineStuff(this.gameObjects, this.pointLights);
     }
 
     @Override
@@ -43,28 +44,44 @@ public class Scene3D extends Scene {
 
     @Override
     public void update(float dt) {
-        this.player.update(dt);
-        this.timeElapsed += 0.01f;
+
+        for (GameObject gameObject : this.gameObjects){
+            gameObject.update(dt);
+        }
     }
 
     @Override
     public void render(float dt) {
+
+        //FIND A WAY TO BATCH TOGETHER ALL THE VERTICES IN A SCENE AND SEND THIS TO THE RENDERER
         this.sceneRenderer.render(this, dt);
     }
 
     @Override
     public void dispose() {
         this.sceneRenderer.dispose();
-        this.player.dispose();
+        for (GameObject gameObject : this.gameObjects){
+            gameObject.dispose();
+        }
     }
 
+    @Override
+    public Camera getCamera(){
+        return this.camera;
+    }
     @Override
     public DirectionalLight getDirectionalLight(){
         return this.directionalLight;
     }
-
     @Override
-    public PointLight[] getPointLights(){
+    public ArrayList<GameObject> getGameObjects(){
+        return this.gameObjects;
+    }
+    @Override
+    public ArrayList<PointLight> getPointLights(){
         return this.pointLights;
+    }
+    public void addGameObject(GameObject obj){
+        this.gameObjects.add(obj);
     }
 }

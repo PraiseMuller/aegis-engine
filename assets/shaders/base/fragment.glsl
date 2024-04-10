@@ -24,12 +24,12 @@ struct PointLight {
     float intensity;
 };
 
-const int NUM_P_LIGHTS = 8;
+//const int NUM_P_LIGHTS = 4;
 const float PI = 3.14159265359f;
 
 uniform Material material;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLight[NUM_P_LIGHTS];
+//uniform PointLight pointLight[NUM_P_LIGHTS];
 
 //f(n) prototypes
 vec4 getDlComponent(vec3 F0, vec4 albedo, float roughness);
@@ -49,33 +49,33 @@ void main(){
     //output luminance
     vec4 Lo = getDlComponent(F0, albedo, roughness);
 
-    for(int i = 0; i < NUM_P_LIGHTS; i++){
-        vec3 l = normalize(pointLight[i].position);//Z - fPos);
-        vec3 n = normalize(fNormal);
-        vec3 v = normalize(-fPos);
-        vec3 h = normalize(v + l);
-
-        float distance = length(pointLight[i].position - fPos);
-        float attenuation = 1.0 / (distance * distance);
-        vec3 radiance = pointLight[i].color * pointLight[i].intensity * attenuation;
-
-        float nDotH = max(dot(n, h), 0.0f);
-        float vDotH = max(dot(v, h), 0.0f);
-        float nDotL = max(dot(n, l), 0.0f);
-        float nDotV = max(dot(n, v), 0.0f);
-
-        vec3 F = frenelSchlickApprox(vDotH, F0); // F == kS
-
-        vec3 _nom = ndfGGX(nDotH, roughness) * F * schlickGGX(nDotV, nDotL, roughness);
-        float _denom = 4 * nDotL * nDotV + 0.0001f;
-        vec3 specularBRDF = _nom / _denom;
-
-        vec3 kD = vec3(1.0) - F;
-        kD *= vec3(1 - material.metallic);
-        vec3 diffuseBRDF = kD * albedo.xyz / PI ;
-
-        Lo += vec4((diffuseBRDF + specularBRDF) * radiance * nDotL, 1.0f);
-    }
+//    for(int i = 0; i < NUM_P_LIGHTS; i++){
+//        vec3 l = normalize(pointLight[i].position);//Z - fPos);
+//        vec3 n = normalize(fNormal);
+//        vec3 v = normalize(-fPos);
+//        vec3 h = normalize(v + l);
+//
+//        float distance = length(pointLight[i].position - fPos);
+//        float attenuation = 1.0 / (distance * distance);
+//        vec3 radiance = pointLight[i].color * pointLight[i].intensity * attenuation;
+//
+//        float nDotH = max(dot(n, h), 0.0f);
+//        float vDotH = max(dot(v, h), 0.0f);
+//        float nDotL = max(dot(n, l), 0.0f);
+//        float nDotV = max(dot(n, v), 0.0f);
+//
+//        vec3 F = frenelSchlickApprox(vDotH, F0); // F == kS
+//
+//        vec3 _nom = ndfGGX(nDotH, roughness) * F * schlickGGX(nDotV, nDotL, roughness);
+//        float _denom = 4 * nDotL * nDotV + 0.0001f;
+//        vec3 specularBRDF = _nom / _denom;
+//
+//        vec3 kD = vec3(1.0) - F;
+//        kD *= vec3(1 - material.metallic);
+//        vec3 diffuseBRDF = kD * albedo.xyz / PI ;
+//
+//        Lo += vec4((diffuseBRDF + specularBRDF) * radiance * nDotL, 1.0f);
+//    }
 
     //ambient lighting
     vec4 ambient = vec4(0.03) * ao * albedo;
