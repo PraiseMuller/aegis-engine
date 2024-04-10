@@ -4,6 +4,7 @@ import core.engine.Scene;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
 import core.engine.StateMachine;
+import core.lighting.PointLight;
 import core.utils.Time;
 import imgui.ImFontAtlas;
 import imgui.ImFontConfig;
@@ -267,8 +268,11 @@ public class ImGuiLayer {
                 ImGui.pushID(1901);
                 float[] pLi = {P_LIGHT_INTENSITY};
                 ImGui.text("Point Lights Intensity");
-                if(ImGui.sliderFloat("##", pLi, 0, 1000)){
-                    P_LIGHT_INTENSITY = pLi[0];
+                if(ImGui.sliderFloat("##", pLi, 0, 5000)){
+                    for(PointLight pointLight : scene.getPointLights()){
+                        P_LIGHT_INTENSITY = pLi[0];
+                        pointLight.setIntensity(P_LIGHT_INTENSITY);
+                    }
                 }
                 ImGui.popID();
 
