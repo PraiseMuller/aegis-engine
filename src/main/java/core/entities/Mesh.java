@@ -2,9 +2,7 @@ package core.entities;
 
 import core.engine.Scene;
 import core.renderer.ShaderProgram;
-import core.renderer.Window;
 import core.utils.AssetPool;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
@@ -45,9 +43,9 @@ public class Mesh {
         this.shaderProgram.createUniform("modelMatrix");
         this.shaderProgram.createMaterialUniform("material");
         this.shaderProgram.createDirectionalLightUniform("directionalLight");
-//        for(int i = 0; i < 4; i++) {
-//            this.shaderProgram.createPointLightUniform("pointLight[" + i + "]");
-//        }
+        for(int i = 0; i < 8; i++) {
+            this.shaderProgram.createPointLightUniform("pointLight[" + i + "]");
+        }
 
         this.vao = glGenVertexArrays();
         glBindVertexArray(this.vao);
@@ -83,8 +81,8 @@ public class Mesh {
         this.shaderProgram.uploadMat4fUniform("modelMatrix", scene.camera.modelMatrix(gameObject));
         this.shaderProgram.setUniform("material", this.material);
         this.shaderProgram.setUniform("directionalLight", scene.getDirectionalLight().toViewSpace( scene.camera.viewMatrix()));
-//        for(int i = 0; i < 4; i++)
-//            this.shaderProgram.setUniform("pointLight["+i+"]", scene.getPointLights().get(i).toViewSpace( scene.camera.viewMatrix() ));
+        for(int i = 0; i < 8; i++)
+            this.shaderProgram.setUniform("pointLight["+ i +"]", scene.getPointLights().get(i));
 
         glBindVertexArray(this.vao);
         glEnableVertexAttribArray(0);

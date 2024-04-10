@@ -256,7 +256,7 @@ public class ImGuiLayer {
                 //d-light strength
                 float[] d = {scene.getDirectionalLight().getIntensity()};
                 ImGui.text("Directional light intensity");
-                if(ImGui.sliderFloat("##", d, 0.1f, 5.0f)){
+                if(ImGui.sliderFloat("##", d, 0.01f, 5.0f)){
                     D_LIGHT_INTENSITY = d[0];
                     scene.getDirectionalLight().setIntensity(d[0]);
                 }
@@ -264,11 +264,11 @@ public class ImGuiLayer {
 
                 //p-light strengths
                 ImGui.separator();
-                ImGui.pushID(11);
-                float[] p = {P_LIGHT_INTENSITY};
+                ImGui.pushID(1901);
+                float[] pLi = {P_LIGHT_INTENSITY};
                 ImGui.text("Point Lights Intensity");
-                if(ImGui.sliderFloat("##", p, 0, 500)){
-                    P_LIGHT_INTENSITY = p[0];
+                if(ImGui.sliderFloat("##", pLi, 0, 1000)){
+                    P_LIGHT_INTENSITY = pLi[0];
                 }
                 ImGui.popID();
 

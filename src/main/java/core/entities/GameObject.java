@@ -21,8 +21,8 @@ public class GameObject {
     public GameObject(Vector3f position, Vector3f color){
         this.position = position;
         this.rotation = new Vector3f();
-        this.scale = new Vector3f(1.0f);
-        //this.mesh = new Mesh("assets/models/default_cube.obj", color);
+        this.scale = new Vector3f(2.0f);
+        this.mesh = new Mesh("assets/models/default_cube.obj", color);
     }
 
     public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, String modelFileLocation){
@@ -33,7 +33,7 @@ public class GameObject {
     }
 
     public void update(float dt){
-        this.rotation.y += 15f * dt;
+        //Zthis.rotation.y += 15f * dt;
     }
 
     public void render(Scene scene){
