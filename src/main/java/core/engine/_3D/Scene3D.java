@@ -9,6 +9,7 @@ import core.lighting.PointLight;
 import core.renderer.LightsRenderer;
 import core.renderer.Renderer;
 import core.utils.AssetPool;
+import core.utils.Time;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -48,6 +49,10 @@ public class Scene3D extends Scene {
 
     @Override
     public void update(float dt) {
+
+        float x = (float) Math.cos(Time.get() + dt);
+        float y = (float) Math.sin(Time.get() + dt);
+        this.camera.movePosition(x, y, 0.0f);
 
         for (GameObject gameObject : this.gameObjects){
             gameObject.update(dt);

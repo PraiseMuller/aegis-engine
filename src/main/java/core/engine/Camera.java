@@ -33,6 +33,7 @@ public abstract class Camera {
     public Matrix4f viewMatrix(){
         return this.view;
     }
+    public Matrix4f lookAt(Vector3f vector3f){  return this.view; }
     public Matrix4f modelMatrix(GameObject obj){
         return this.model;
     }

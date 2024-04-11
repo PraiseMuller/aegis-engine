@@ -24,7 +24,7 @@ public final class SETTINGS {
     public static final Vector3f CAMERA_INIT_POS = new Vector3f(-1.54E2f, 8.38E1f, 1.27E2f);
     public static final Vector3f CAMERA_INIT_ROT = new Vector3f(1.9E1f, 5.56E1f, 0.0E0f);
     public static final Vector3f GAME_OBJ_INIT_POSITION = new Vector3f(0.0f, 0.0f, 0.0f);
-    public static float P_LIGHT_INTENSITY = 100.0f;
+    public static float P_LIGHT_INTENSITY = 2500.0f;
     public static int NUM_P_LIGHTS = 4;
     public static float D_LIGHT_INTENSITY = 1.0f;
     public static float BLOOM_INTENSITY = 0.9f;

@@ -68,4 +68,10 @@ public class Camera3D extends Camera {
         this.view.translate(-this.position.x, -this.position.y, -this.position.z);
         return this.view;
     }
+    @Override
+    public Matrix4f lookAt(Vector3f point){
+        this.view.identity();
+        this.view.lookAt(this.position, point, new Vector3f(0.0f, 1.0f, 0.0f));
+        return this.view;
+    }
 }

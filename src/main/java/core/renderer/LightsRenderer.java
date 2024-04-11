@@ -70,7 +70,7 @@ public class LightsRenderer {
     public void render() {
         this.shaderProgram.bind();
         this.shaderProgram.uploadMat4fUniform("uProjection", Window.currentCamera().projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("uView", Window.currentCamera().viewMatrix());
+        this.shaderProgram.uploadMat4fUniform("uView", Window.currentCamera().lookAt(new Vector3f()));
 
         for (int i = 0; i < this.pointLights.size(); i++){
             this.shaderProgram.uploadMat4fUniform("uModel", Window.currentCamera().modelMatrix(  pointLights.get(i) ));

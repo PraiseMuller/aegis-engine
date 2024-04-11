@@ -7,14 +7,14 @@ public class Material {
     private float metallicVal, roughnessVal;
 
     public Material(){
-        this.metallicVal = 0.6f;
-        this.roughnessVal = 0.2f;
-        this.color = new Vector3f(0.0f, 0.6f, 0.9f);
+        this.metallicVal = 0.8f;
+        this.roughnessVal = 0.3f;
+        this.color = new Vector3f(0.9f, 0.5f, 0.9f);
     }
 
     public Material(Vector3f color){
         this.metallicVal = 0.0f;
-        this.roughnessVal = 0.2f;
+        this.roughnessVal = 0.4f;
         this.color = color;
     }
 

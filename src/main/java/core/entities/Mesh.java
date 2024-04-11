@@ -78,7 +78,7 @@ public class Mesh {
 
         this.shaderProgram.bind();
         this.shaderProgram.uploadMat4fUniform("projectionMatrix", scene.camera.projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("viewMatrix",scene.camera.viewMatrix());
+        this.shaderProgram.uploadMat4fUniform("viewMatrix",scene.camera.lookAt(new Vector3f()));
         this.shaderProgram.uploadMat4fUniform("modelMatrix", scene.camera.modelMatrix(gameObject));
         this.shaderProgram.setUniform("material", this.material);
         this.shaderProgram.setUniform("directionalLight", scene.getDirectionalLight());
