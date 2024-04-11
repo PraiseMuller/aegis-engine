@@ -7,9 +7,9 @@ public class Material {
     private float metallicVal, roughnessVal;
 
     public Material(){
-        this.metallicVal = 0.0f;
+        this.metallicVal = 0.6f;
         this.roughnessVal = 0.2f;
-        this.color = new Vector3f(0.7f);
+        this.color = new Vector3f(0.0f, 0.6f, 0.9f);
     }
 
     public Material(Vector3f color){
@@ -23,6 +23,13 @@ public class Material {
         this.color.y = color.y;
         this.color.z = color.z;
     }
+
+    public void setColor(float x, float y, float z){
+        this.color.x = x;
+        this.color.y = y;
+        this.color.z = z;
+    }
+
     public Vector3f getColor() {
         return color;
     }

@@ -50,7 +50,7 @@ public class BloomRenderer {
         this.extractBrightFramebuffer = new FrameBuffer(false);
 
         // Framebuffer
-        int num_bloom_mips = 6; // Experiment with this value
+        int num_bloom_mips = 9; // Experiment with this value
         this.bloomFramebuffer = new BloomFramebuffer(windowWidth, windowHeight, num_bloom_mips);
     }
 

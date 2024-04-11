@@ -173,32 +173,29 @@ public class AssetPool {
 
     public static void initializeAllEngineStuff(ArrayList<GameObject> gameObjects, ArrayList<PointLight> pointLights){
 
-        GameObject mon_infinian = new GameObject(GAME_OBJ_INIT_POSITION, new Vector3f(90,0,0), new Vector3f(0.07f), "D:\\Models\\Infinian lineage series\\source\\Mon_Infinian_001_Skeleton.FBX");
-        GameObject gwyn_ = new GameObject(new Vector3f(-30,0,0), new Vector3f(0,0,0), new Vector3f(14.0f), "assets/models/gwyn.obj");
-        GameObject tarisland_dragon = new GameObject(new Vector3f(100,0,10), new Vector3f(90,0,80), new Vector3f(0.09f), "D:\\Models\\Tarisland dragon high poly\\source\\M_B_44_Qishilong_skin_Skeleton.FBX");
-        GameObject dragonkin_mir = new GameObject(new Vector3f(-30,0,90), new Vector3f(90,0,120), new Vector3f(0.1f), "D:\\Models\\Silver dragonkin Mir\\source\\Mon_BlackDragon31_Skeleton.FBX");
-        GameObject _floor = new GameObject(new Vector3f(0,-1,0), new Vector3f(0,0,0), new Vector3f(200, 1, 200), "assets/models/default_cube.obj");
+        GameObject gt3_rs = new GameObject(GAME_OBJ_INIT_POSITION, new Vector3f(0,0,0), new Vector3f(40f), "assets/models/GT3 RS/GT3 RS.obj");
 
-        gameObjects.add(mon_infinian);
-        gameObjects.add(gwyn_);
-        gameObjects.add(tarisland_dragon);
-        gameObjects.add(dragonkin_mir);
+
+//        GameObject mon_infinian = new GameObject(GAME_OBJ_INIT_POSITION, new Vector3f(90,0,0), new Vector3f(0.07f), "D:\\Models\\Infinian lineage series\\source\\Mon_Infinian_001_Skeleton.FBX");
+//        GameObject gwyn_ = new GameObject(new Vector3f(-30,0,0), new Vector3f(0,0,0), new Vector3f(14.0f), "assets/models/gwyn.obj");
+//        GameObject tarisland_dragon = new GameObject(new Vector3f(100,0,10), new Vector3f(90,0,80), new Vector3f(0.09f), "D:\\Models\\Tarisland dragon high poly\\source\\M_B_44_Qishilong_skin_Skeleton.FBX");
+//        GameObject dragonkin_mir = new GameObject(new Vector3f(-30,0,90), new Vector3f(90,0,120), new Vector3f(0.1f), "D:\\Models\\Silver dragonkin Mir\\source\\Mon_BlackDragon31_Skeleton.FBX");
+        GameObject _floor = new GameObject(new Vector3f(0,-10,0), new Vector3f(0,0,0), new Vector3f(200, 1, 200), "assets/models/default_cube.obj");
+        _floor.getMesh().getMaterial().setColor(0.4f,0,0.4f);
+
+        gameObjects.add(gt3_rs);
+//        gameObjects.add(mon_infinian);
+//        gameObjects.add(gwyn_);
+//        gameObjects.add(tarisland_dragon);
+//        gameObjects.add(dragonkin_mir);
         gameObjects.add(_floor);
-
 
         //ADD LIGHTS
         int n = 50;
-        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY));
-        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY));
-        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(-n,-n,-n), P_LIGHT_INTENSITY));
-        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(n,-n,-n), P_LIGHT_INTENSITY));
+        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,0.0f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY));
+        pointLights.add(new PointLight(new Vector3f(0.0f,1.0f,0.0f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY));
         pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(-n, n, n), P_LIGHT_INTENSITY));
-        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(n, n, n), P_LIGHT_INTENSITY));
-        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(-n,-n,n), P_LIGHT_INTENSITY));
-        pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(n,-n,n), P_LIGHT_INTENSITY));
-
-        for(int i = 0; i < 8; i++)
-            gameObjects.add(new GameObject(pointLights.get(i).getPosition(), pointLights.get(i).getColor()));
+        pointLights.add(new PointLight(new Vector3f(0.0f,1.0f,1.0f), new Vector3f(n, n, n), P_LIGHT_INTENSITY));
     }
 
 }

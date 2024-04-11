@@ -24,14 +24,13 @@ struct PointLight {
     float intensity;
 };
 
-const int NUM_P_LIGHTS = 8;
+const int NUM_P_LIGHTS = 4;
 const float PI = 3.14159265359f;
 
 uniform Material material;
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLight[NUM_P_LIGHTS];
 uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
 
 //f(n) prototypes
 vec4 getDlComponent(vec3 F0, vec4 albedo, float roughness);
@@ -53,14 +52,14 @@ void main(){
 
     for(int i = 0; i < NUM_P_LIGHTS; i++){
         //1st change to view space coordinates
-        //vec3 pointLightPos = (viewMatrix * vec4(pointLight[i].position, 1.0f)).xyz;
+        vec3 pointLightPos = (vec4(pointLight[i].position, 0.0f) * viewMatrix).xyz;
 
-        vec3 l = normalize(pointLight[i].position);//Z - fPos);
+        vec3 l = normalize(pointLightPos);//Z - fPos);
         vec3 n = normalize(fNormal);
         vec3 v = normalize(-fPos);
         vec3 h = normalize(v + l);
 
-        float distance = length(pointLight[i].position - fPos);
+        float distance = length(pointLightPos - fPos);
         float attenuation = 1.0 / (distance * distance);
         vec3 radiance = pointLight[i].color * pointLight[i].intensity * attenuation;
 

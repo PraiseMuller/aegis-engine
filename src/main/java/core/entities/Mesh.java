@@ -8,6 +8,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
+import static core.utils.SETTINGS.NUM_P_LIGHTS;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -43,7 +44,7 @@ public class Mesh {
         this.shaderProgram.createUniform("modelMatrix");
         this.shaderProgram.createMaterialUniform("material");
         this.shaderProgram.createDirectionalLightUniform("directionalLight");
-        for(int i = 0; i < 8; i++) {
+        for(int i = 0; i < NUM_P_LIGHTS; i++) {
             this.shaderProgram.createPointLightUniform("pointLight[" + i + "]");
         }
 
@@ -80,8 +81,8 @@ public class Mesh {
         this.shaderProgram.uploadMat4fUniform("viewMatrix",scene.camera.viewMatrix());
         this.shaderProgram.uploadMat4fUniform("modelMatrix", scene.camera.modelMatrix(gameObject));
         this.shaderProgram.setUniform("material", this.material);
-        this.shaderProgram.setUniform("directionalLight", scene.getDirectionalLight().toViewSpace( scene.camera.viewMatrix()));
-        for(int i = 0; i < 8; i++)
+        this.shaderProgram.setUniform("directionalLight", scene.getDirectionalLight());
+        for(int i = 0; i < NUM_P_LIGHTS; i++)
             this.shaderProgram.setUniform("pointLight["+ i +"]", scene.getPointLights().get(i));
 
         glBindVertexArray(this.vao);

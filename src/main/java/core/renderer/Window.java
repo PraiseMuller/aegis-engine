@@ -84,7 +84,6 @@ public class Window {
             setWidth(width);
             setHeight(height);
             glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
-            sceneInstance.init();
         });
     }
 

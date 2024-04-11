@@ -6,6 +6,7 @@ import core.entities.GameObject;
 import core.inputs.Input;
 import core.lighting.DirectionalLight;
 import core.lighting.PointLight;
+import core.renderer.LightsRenderer;
 import core.renderer.Renderer;
 import core.utils.AssetPool;
 import org.joml.Vector3f;
@@ -18,6 +19,7 @@ public class Scene3D extends Scene {
     private DirectionalLight directionalLight = null;
     private ArrayList<PointLight> pointLights = null;
     private ArrayList<GameObject> gameObjects = null;
+    private LightsRenderer lightsRenderer = null;
 
     public Scene3D(){
         super();
@@ -35,6 +37,8 @@ public class Scene3D extends Scene {
         //INITIALIZE AND ADD GAME-OBJECTS TO SCENE
         this.gameObjects = new ArrayList<>();
         AssetPool.initializeAllEngineStuff(this.gameObjects, this.pointLights);
+
+        this.lightsRenderer = new LightsRenderer(this.pointLights, this.directionalLight);
     }
 
     @Override
@@ -60,6 +64,7 @@ public class Scene3D extends Scene {
     @Override
     public void dispose() {
         this.sceneRenderer.dispose();
+        this.lightsRenderer.dispose();
         for (GameObject gameObject : this.gameObjects){
             gameObject.dispose();
         }
@@ -83,5 +88,9 @@ public class Scene3D extends Scene {
     }
     public void addGameObject(GameObject obj){
         this.gameObjects.add(obj);
+    }
+    @Override
+    public LightsRenderer getLightsRenderer(){
+        return this.lightsRenderer;
     }
 }

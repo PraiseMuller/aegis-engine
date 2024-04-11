@@ -268,7 +268,7 @@ public class ImGuiLayer {
                 ImGui.pushID(1901);
                 float[] pLi = {P_LIGHT_INTENSITY};
                 ImGui.text("Point Lights Intensity");
-                if(ImGui.sliderFloat("##", pLi, 0, 5000)){
+                if(ImGui.sliderFloat("##", pLi, 0, 500)){
                     for(PointLight pointLight : scene.getPointLights()){
                         P_LIGHT_INTENSITY = pLi[0];
                         pointLight.setIntensity(P_LIGHT_INTENSITY);

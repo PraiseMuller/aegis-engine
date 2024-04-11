@@ -1,16 +1,17 @@
-#version 330 core
+#version 440 core
 
 out vec4 color;
 
-struct Material {
-    vec3 color;
-    float metallic;
-    float roughness;
-};
-
-uniform Material material;
+uniform vec3 fColor;
 uniform float intensity;
+uniform float isDirLight;
 
 void main(){
-    color = vec4(material.color * intensity, 1.0f);
+    vec4 temp;
+    if(isDirLight == 1)
+        temp = vec4(fColor, 0.0f) * (intensity * 10);
+    else
+        temp = vec4(fColor, 0.0f) * (intensity/50);
+
+    color = temp;
 }

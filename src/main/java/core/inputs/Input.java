@@ -17,7 +17,7 @@ public class Input {
         Vector3f cameraRot = new Vector3f();
 
         //CAM POS
-        float cameraMoveSpeed = 20.0f;
+        float cameraMoveSpeed = 40.0f;
         if (KeyListener.isKeyPressed(GLFW_KEY_W))   delta.add(new Vector3f(0.0f, 0.0f, -cameraMoveSpeed * dt));
         if (KeyListener.isKeyPressed(GLFW_KEY_S))   delta.add(new Vector3f(0.0f, 0.0f, cameraMoveSpeed * dt));
 

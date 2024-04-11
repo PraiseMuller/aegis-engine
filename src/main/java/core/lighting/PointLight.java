@@ -7,7 +7,7 @@ public class PointLight extends GameObject {
     private float intensity;
 
     public PointLight(Vector3f color, Vector3f position, float intensity){
-        super(position, color);
+        super(position, color, 1.0f);
         this.intensity = intensity;
     }
 

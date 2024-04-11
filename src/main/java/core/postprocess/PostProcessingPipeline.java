@@ -28,17 +28,24 @@ public class PostProcessingPipeline {
         //draw scene into a fbo to extract the texture.
         this.fistPassframeBuffer.bind();
         if(WIRE_FRAME_MODE) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         if(batchManager != null) batchManager.render();
+
         for(GameObject gameObject : scene.getGameObjects()) {
             gameObject.render(scene);
         }
+
+        scene.getLightsRenderer().render();
+
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         this.fistPassframeBuffer.unbind();
 
+        ///////////////////////////////////////////////////////////////////////////////////
         //Process: 1. Bloom
         Texture sceneTexture = this.fistPassframeBuffer.getColorAttachment();
         this.bloomRenderer.renderBloomTexture(sceneTexture, 0.0001f);
 
+        ////////////////////////////////////////////////////////////////////////////////////
         //Apply: 1. Bloom
         defaultFramebuffer();
         Texture bloomTexture = this.bloomRenderer.bloomTexture();
