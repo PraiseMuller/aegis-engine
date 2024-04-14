@@ -10,14 +10,10 @@ public class DirectionalLight extends GameObject {
     private float intensity;
 
     public DirectionalLight(Vector3f color, Vector3f direction, float intensity){
-        super(new Vector3f(direction.mul(50.0f)), color, 500.0f);
+        super(direction.mul(500), color, 50.0f);
 
         this.direction = direction;
         this.intensity =  intensity;
-    }
-
-    public DirectionalLight(DirectionalLight d){
-        this(d.getMesh().getMaterial().getColor(), d.direction, d.intensity);
     }
 
     public Vector3f getDirection() {
@@ -29,11 +25,11 @@ public class DirectionalLight extends GameObject {
     }
 
     public Vector3f getColor() {
-        return this.getMesh().getMaterial().getColor();
+        return this.getMaterial().getColor();
     }
 
     public void setColor(Vector3f color) {
-        this.getMesh().getMaterial().setColor(color);
+        this.getMaterial().setColor(color);
     }
 
     public float getIntensity() {

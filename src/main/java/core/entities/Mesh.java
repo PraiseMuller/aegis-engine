@@ -1,6 +1,7 @@
 package core.entities;
 
 import core.engine.Scene;
+import core.engine.StateMachine;
 import core.renderer.ShaderProgram;
 import core.utils.AssetPool;
 import org.joml.Vector3f;
@@ -78,12 +79,12 @@ public class Mesh {
 
         this.shaderProgram.bind();
         this.shaderProgram.uploadMat4fUniform("projectionMatrix", scene.camera.projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("viewMatrix",scene.camera.lookAt(new Vector3f()));
+        this.shaderProgram.uploadMat4fUniform("viewMatrix", StateMachine.play() ? scene.camera.lookAt(new Vector3f(0,20,0)) : scene.camera.viewMatrix());
         this.shaderProgram.uploadMat4fUniform("modelMatrix", scene.camera.modelMatrix(gameObject));
         this.shaderProgram.setUniform("material", this.material);
-        this.shaderProgram.setUniform("directionalLight", scene.getDirectionalLight());
+        this.shaderProgram.setUniform("directionalLight", scene.getLightsRenderer().directionalLight);
         for(int i = 0; i < NUM_P_LIGHTS; i++)
-            this.shaderProgram.setUniform("pointLight["+ i +"]", scene.getPointLights().get(i));
+            this.shaderProgram.setUniform("pointLight["+ i +"]", scene.getLightsRenderer().pointLights.get(i));
 
         glBindVertexArray(this.vao);
         glEnableVertexAttribArray(0);

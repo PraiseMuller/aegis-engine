@@ -17,11 +17,12 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL.createCapabilities;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
     private static long window;
-    private static Scene3D sceneInstance = null;
+    private static Scene3D currentScene = null;
     private static Window instance = null;
 
     private Window(){
@@ -34,6 +35,7 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 4);        //MSAA
         //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
@@ -80,11 +82,17 @@ public class Window {
         glfwShowWindow(window);
         createCapabilities();
 
+        glEnable(GL_MULTISAMPLE);
+
         glfwSetWindowSizeCallback(window, (w, width, height)->{
             setWidth(width);
             setHeight(height);
             glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
         });
+
+
+        currentScene = new Scene3D();
+        currentScene.init();
     }
 
     public static Window get(){
@@ -102,16 +110,14 @@ public class Window {
         float startTime = Time.get();
         float endTime;
 
-        sceneInstance = new Scene3D();
-
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
 
             if(dt > 0){
-                sceneInstance.updateInputs(dt);
-                if(StateMachine.play()) sceneInstance.update(dt);
+                currentScene.updateInputs(dt);
+                if(StateMachine.play()) currentScene.update(dt);
 
-                sceneInstance.render(dt);
+                currentScene.render(dt);
             }
 
             glfwSwapBuffers(window);
@@ -124,9 +130,9 @@ public class Window {
         cleanup();
     }
 
-    public static void cleanup(){
+    public void cleanup(){
         //cleanup
-        sceneInstance.dispose();
+        currentScene.dispose();
         glfwFreeCallbacks(window);
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
         glfwDestroyWindow(window);
@@ -143,7 +149,7 @@ public class Window {
         WIN_HEIGHT = h;
     }
     public static Camera currentCamera(){
-        return sceneInstance.getCamera();
+        return currentScene.getCamera();
     }
 
 }

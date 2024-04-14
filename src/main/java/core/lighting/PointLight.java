@@ -12,10 +12,10 @@ public class PointLight extends GameObject {
     }
 
     public Vector3f getColor() {
-        return this.getMesh().getMaterial().getColor();
+        return this.getMaterial().getColor();
     }
     public void setColor(Vector3f color) {
-        this.getMesh().getMaterial().setColor(color);
+        this.getMaterial().setColor(color);
     }
     public void setIntensity(float intensity) {
         this.intensity = intensity;

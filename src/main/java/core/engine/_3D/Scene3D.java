@@ -10,15 +10,12 @@ import core.renderer.LightsRenderer;
 import core.renderer.Renderer;
 import core.utils.AssetPool;
 import core.utils.Time;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
 import static core.utils.SETTINGS.*;
 
 public class Scene3D extends Scene {
-    private DirectionalLight directionalLight = null;
-    private ArrayList<PointLight> pointLights = null;
     private ArrayList<GameObject> gameObjects = null;
     private LightsRenderer lightsRenderer = null;
 
@@ -31,15 +28,11 @@ public class Scene3D extends Scene {
     public void init() {
         this.sceneRenderer = new Renderer(this);
         this.camera = new Camera3D(FOV, WIN_WIDTH, WIN_HEIGHT, Z_NEAR, Z_FAR);
-
-        this.pointLights = new ArrayList<>();
-        this.directionalLight = new DirectionalLight(new Vector3f(0.1f, 0.1f, 0.2f), new Vector3f(1, 1, -1), D_LIGHT_INTENSITY);
+        this.lightsRenderer = new LightsRenderer();
 
         //INITIALIZE AND ADD GAME-OBJECTS TO SCENE
         this.gameObjects = new ArrayList<>();
-        AssetPool.initializeAllEngineStuff(this.gameObjects, this.pointLights);
-
-        this.lightsRenderer = new LightsRenderer(this.pointLights, this.directionalLight);
+        AssetPool.initializeAllEngineStuff(this.gameObjects);
     }
 
     @Override
@@ -64,6 +57,7 @@ public class Scene3D extends Scene {
 
         //FIND A WAY TO BATCH TOGETHER ALL THE VERTICES IN A SCENE AND SEND THIS TO THE RENDERER
         this.sceneRenderer.render(this, dt);
+        this.lightsRenderer.render();
     }
 
     @Override
@@ -80,22 +74,12 @@ public class Scene3D extends Scene {
         return this.camera;
     }
     @Override
-    public DirectionalLight getDirectionalLight(){
-        return this.directionalLight;
-    }
-    @Override
     public ArrayList<GameObject> getGameObjects(){
         return this.gameObjects;
     }
     @Override
-    public ArrayList<PointLight> getPointLights(){
-        return this.pointLights;
-    }
+    public LightsRenderer getLightsRenderer(){ return this.lightsRenderer; }
     public void addGameObject(GameObject obj){
         this.gameObjects.add(obj);
-    }
-    @Override
-    public LightsRenderer getLightsRenderer(){
-        return this.lightsRenderer;
     }
 }

@@ -1,6 +1,5 @@
 package core.entities;
 
-import core.engine.Scene;
 import org.joml.Vector3f;
 
 public class GameObject {
@@ -8,36 +7,39 @@ public class GameObject {
     protected final Vector3f position;
     protected final Vector3f rotation;
     protected final Vector3f scale;
-    private final Mesh mesh;
+    private final BasicMesh mesh;
+    private final Material material;
 
     public GameObject(){
-        this.position = null;
-        this.rotation = null;
-        this.scale = null;
-        this.mesh = null;
-        throw new RuntimeException("What the fuck?");
+        this.position = new Vector3f();
+        this.rotation = new Vector3f();
+        this.scale = new Vector3f(1.0f);
+        this.mesh = new BasicMesh("assets/models/default_cube.obj");
+        this.material = new Material();
     }
 
     public GameObject(Vector3f position, Vector3f color, float scale){
         this.position = position;
         this.rotation = new Vector3f();
         this.scale = new Vector3f(scale);
-        this.mesh = new Mesh("assets/models/default_cube.obj", color);
+        this.mesh = new BasicMesh("assets/models/default_cube.obj");
+        this.material = new Material(color);
     }
 
     public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, String modelFileLocation){
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.mesh = new Mesh(modelFileLocation);
+        this.mesh = new BasicMesh(modelFileLocation);
+        this.material = new Material();
     }
 
     public void update(float dt){
-        this.rotation.y += 15f * dt;
+        //this.rotation.y += 15f * dt;
     }
 
-    public void render(Scene scene){
-        this.mesh.render(scene, this);
+    public void render(){
+        this.mesh.render();
     }
 
     public void setPosition(Vector3f pos){
@@ -55,8 +57,11 @@ public class GameObject {
     public Vector3f getScale(){
         return this.scale;
     }
-    public Mesh getMesh(){ return this.mesh; }
+    public Material getMaterial(){
+        return this.material;
+    }
     public void dispose(){
         this.mesh.dispose();
+        this.material.dispose();
     }
 }

@@ -247,19 +247,19 @@ public class ImGuiLayer {
                 //LIGHTS
                 ImGui.separator();
                 //color picker, d-light direction
-                Vector3f dir = scene.getDirectionalLight().getDirection();
+                Vector3f dir = scene.getLightsRenderer().directionalLight.getDirection();
                 float[] dd = {dir.x, dir.y, dir.z};
                 ImGui.text("Directional light direction");
                 if(ImGui.sliderFloat3("##", dd, -1f, 1f)){
-                    scene.getDirectionalLight().setDirection(new Vector3f(dd[0], dd[1], dd[2]));
+                    scene.getLightsRenderer().directionalLight.setDirection(new Vector3f(dd[0], dd[1], dd[2]));
                 }
 
                 //d-light strength
-                float[] d = {scene.getDirectionalLight().getIntensity()};
+                float[] d = {scene.getLightsRenderer().directionalLight.getIntensity()};
                 ImGui.text("Directional light intensity");
                 if(ImGui.sliderFloat("##", d, 0.0f, 10.0f)){
                     D_LIGHT_INTENSITY = d[0];
-                    scene.getDirectionalLight().setIntensity(d[0]);
+                    scene.getLightsRenderer().directionalLight.setIntensity(d[0]);
                 }
 
 
@@ -269,7 +269,7 @@ public class ImGuiLayer {
                 float[] pLi = {P_LIGHT_INTENSITY};
                 ImGui.text("Point Lights Intensity");
                 if(ImGui.sliderFloat("##", pLi, 0.0f, 10000.0f)){
-                    for(PointLight pointLight : scene.getPointLights()){
+                    for(PointLight pointLight : scene.getLightsRenderer().pointLights){
                         P_LIGHT_INTENSITY = pLi[0];
                         pointLight.setIntensity(P_LIGHT_INTENSITY);
                     }

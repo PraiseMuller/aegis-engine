@@ -29,7 +29,7 @@ public class Scene2D extends Scene {
 
         //INITIALIZE AND ADD GAME-OBJECTS TO SCENE
         this.gameObjects = new ArrayList<>();
-        AssetPool.initializeAllEngineStuff(this.gameObjects, null);
+        AssetPool.initializeAllEngineStuff(this.gameObjects);
     }
 
     @Override

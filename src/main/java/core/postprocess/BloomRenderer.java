@@ -54,7 +54,7 @@ public class BloomRenderer {
         this.bloomFramebuffer = new BloomFramebuffer(windowWidth, windowHeight, num_bloom_mips);
     }
 
-    public void renderBloomTexture(Texture srcTexture, float filterRadius) {
+    public void render(Texture srcTexture, float filterRadius) {
 
         //Process: 1. Extract the brightest fragments in 'srcTexture', discard all fragments below some threshold, BLOOM_INTENSITY.
         this.extractBrightFrags(srcTexture);

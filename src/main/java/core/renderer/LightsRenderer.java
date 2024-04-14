@@ -1,7 +1,5 @@
 package core.renderer;
 
-import core.entities.GameObject;
-import core.entities.Material;
 import core.lighting.DirectionalLight;
 import core.lighting.PointLight;
 import core.utils.AssetPool;
@@ -11,6 +9,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import static core.utils.SETTINGS.D_LIGHT_INTENSITY;
 import static core.utils.SETTINGS.P_LIGHT_INTENSITY;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
@@ -23,13 +22,19 @@ public class LightsRenderer {
     private final int vao, vbo;
     private int indicesSize = 0;
     private final ShaderProgram shaderProgram;
-    private final ArrayList<PointLight> pointLights;
-    private final DirectionalLight directionalLight;
+    public final ArrayList<PointLight> pointLights;
+    public final DirectionalLight directionalLight;
 
-    public LightsRenderer(ArrayList<PointLight> pointLights, DirectionalLight directionalLight){
+    public LightsRenderer(){
 
-        this.pointLights = pointLights;
-        this.directionalLight = directionalLight;
+        this.pointLights = new ArrayList<>();
+        int n = 100;
+        this.pointLights.add(new PointLight(new Vector3f(0.0f,1.0f,1.0f), new Vector3f(n, n, n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,0.0f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(0.0f,1.0f,0.0f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(-n, n, n), P_LIGHT_INTENSITY));
+
+        this.directionalLight = new DirectionalLight(new Vector3f(0.1f, 0.1f, 0.2f), new Vector3f(1, 1, -1), D_LIGHT_INTENSITY);
 
         this.shaderProgram = new ShaderProgram();
         this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/light-shaders/vertex.glsl"));

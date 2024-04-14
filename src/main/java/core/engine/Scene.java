@@ -1,8 +1,6 @@
 package core.engine;
 
 import core.entities.GameObject;
-import core.lighting.DirectionalLight;
-import core.lighting.PointLight;
 import core.renderer.LightsRenderer;
 import core.renderer.Renderer;
 
@@ -25,12 +23,8 @@ public abstract class Scene {
     public Camera getCamera(){
         return null;
     }
-    public DirectionalLight getDirectionalLight(){
-        return null;
-    }
     public ArrayList<GameObject> getGameObjects(){
         return null;
     }
-    public  ArrayList<PointLight> getPointLights(){return null;}
-    public LightsRenderer getLightsRenderer(){ return null; };
+    public LightsRenderer getLightsRenderer(){ return null; }
 }
