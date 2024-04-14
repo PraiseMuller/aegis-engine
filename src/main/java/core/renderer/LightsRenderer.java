@@ -4,37 +4,28 @@ import core.lighting.DirectionalLight;
 import core.lighting.PointLight;
 import core.utils.AssetPool;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static core.utils.SETTINGS.D_LIGHT_INTENSITY;
 import static core.utils.SETTINGS.P_LIGHT_INTENSITY;
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.system.MemoryUtil.memFree;
 
 public class LightsRenderer {
-    private final int vao, vbo;
-    private int indicesSize = 0;
+
     private final ShaderProgram shaderProgram;
     public final ArrayList<PointLight> pointLights;
     public final DirectionalLight directionalLight;
 
     public LightsRenderer(){
 
-        this.pointLights = new ArrayList<>();
         int n = 100;
-        this.pointLights.add(new PointLight(new Vector3f(0.0f,1.0f,1.0f), new Vector3f(n, n, n), P_LIGHT_INTENSITY));
-        this.pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,0.0f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY));
-        this.pointLights.add(new PointLight(new Vector3f(0.0f,1.0f,0.0f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY));
-        this.pointLights.add(new PointLight(new Vector3f(1.0f,1.0f,1.0f), new Vector3f(-n, n, n), P_LIGHT_INTENSITY));
+        this.pointLights = new ArrayList<>();
+        this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(n, n, n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(-n, n, n), P_LIGHT_INTENSITY));
 
-        this.directionalLight = new DirectionalLight(new Vector3f(0.1f, 0.1f, 0.2f), new Vector3f(1, 1, -1), D_LIGHT_INTENSITY);
+        this.directionalLight = new DirectionalLight(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1, 1, -1), D_LIGHT_INTENSITY);
 
         this.shaderProgram = new ShaderProgram();
         this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/light-shaders/vertex.glsl"));
@@ -47,53 +38,21 @@ public class LightsRenderer {
         this.shaderProgram.createUniform("fColor");
         this.shaderProgram.createUniform("intensity");
         this.shaderProgram.createUniform("isDirLight");
-
-        this.vao = glGenVertexArrays();
-        glBindVertexArray(this.vao);
-
-        //get shape
-        float[] floats = AssetPool.loadAiScece("assets/models/default_cube.obj");
-        FloatBuffer modelVertices = MemoryUtil.memAllocFloat(floats.length);
-        modelVertices.put(floats).flip();
-
-        this.indicesSize = floats.length;
-
-        this.vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
-        glBufferData(GL_ARRAY_BUFFER, modelVertices, GL_STATIC_DRAW);
-
-        //Attrib pointer(s)
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * Float.BYTES, 0);
-
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        memFree(modelVertices);
     }
 
     public void render() {
+
         this.shaderProgram.bind();
         this.shaderProgram.uploadMat4fUniform("uProjection", Window.currentCamera().projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("uView", Window.currentCamera().lookAt(new Vector3f()));
+        this.shaderProgram.uploadMat4fUniform("uView", Window.currentCamera().viewMatrix() );
 
-        for (int i = 0; i < this.pointLights.size(); i++){
-            this.shaderProgram.uploadMat4fUniform("uModel", Window.currentCamera().modelMatrix(  pointLights.get(i) ));
-            this.shaderProgram.uploadVec3fUniform("fColor", pointLights.get(i).getColor());
-            this.shaderProgram.uploadFloatUniform("intensity", pointLights.get(i).getIntensity());
+        for (PointLight pointLight : this.pointLights) {
+            this.shaderProgram.uploadMat4fUniform("uModel", Window.currentCamera().modelMatrix(  pointLight  ));
+            this.shaderProgram.uploadVec3fUniform("fColor", pointLight.getColor());
+            this.shaderProgram.uploadFloatUniform("intensity", pointLight.getIntensity());
             this.shaderProgram.uploadIntUniform("isDirLight", 0);
 
-            glBindVertexArray(this.vao);
-            glEnableVertexAttribArray(0);
-            glEnableVertexAttribArray(1);
-            glEnableVertexAttribArray(2);
-
-            glDrawArrays(GL_TRIANGLES, 0, this.indicesSize);
-
-            glDisableVertexAttribArray(0);
-            glDisableVertexAttribArray(1);
-            glDisableVertexAttribArray(2);
-            glBindVertexArray(0);
+            pointLight.render();
         }
 
         //draw directional light
@@ -102,24 +61,17 @@ public class LightsRenderer {
         this.shaderProgram.uploadFloatUniform("intensity", directionalLight.getIntensity());
         this.shaderProgram.uploadIntUniform("isDirLight", 1);
 
-        glBindVertexArray(this.vao);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
+        this.directionalLight.render();
 
-        glDrawArrays(GL_TRIANGLES, 0, this.indicesSize);
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
-        glBindVertexArray(0);
 
         this.shaderProgram.unbind();
     }
 
     public void dispose(){
         this.shaderProgram.dispose();
-        glDeleteVertexArrays(this.vao);
-        glDeleteBuffers(this.vbo);
+        this.directionalLight.dispose();
+        for(PointLight pointLight : this.pointLights){
+            pointLight.dispose();
+        }
     }
 }

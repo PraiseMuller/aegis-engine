@@ -45,7 +45,7 @@ public class BasicMesh {
         for(int i = 0; i < this.attributeBuffers.length; i++)
             this.attributeBuffers[i] = glGenBuffers();
 
-        AIScene aiScene = aiImportFile(fileLocation, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+        AIScene aiScene = aiImportFile(fileLocation, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
         assert aiScene != null;
         countVerticesAndIndices(aiScene);
         initAllMeshes(aiScene);
@@ -128,7 +128,6 @@ public class BasicMesh {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.attributeBuffers[3]);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, AssetPool.toIntArr(this.indices), GL_STATIC_DRAW);
     }
-
 
     public void render(){
 

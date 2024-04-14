@@ -1,18 +1,16 @@
 package core.lighting;
 
 import core.entities.GameObject;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class DirectionalLight extends GameObject {
     private Vector3f direction;
     private float intensity;
 
     public DirectionalLight(Vector3f color, Vector3f direction, float intensity){
-        super(direction.mul(500), color, 50.0f);
+        super(new Vector3f(direction.x * 500, direction.y * 500, direction.z * 500), color, 50.0f);
 
-        this.direction = direction;
+        this.direction = direction.normalize();
         this.intensity =  intensity;
     }
 

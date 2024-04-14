@@ -189,7 +189,7 @@ public class ImGuiLayer {
     }
 
     // Main application loop
-    public void update(float dt, Scene scene) {
+    public void render(float dt, Scene scene) {
         startFrame(dt);
 
         // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
@@ -218,17 +218,6 @@ public class ImGuiLayer {
                     BLOOM_ON = !BLOOM_ON;
                 }
 
-                //Bloom Intensity
-                ImGui.separator();
-                ImGui.pushID(153);
-                float[] bloomArr = {BLOOM_INTENSITY};
-                ImGui.text("Bloom intensity");
-                if(ImGui.sliderFloat("##", bloomArr, 0.03f, 1.0f)){
-                        BLOOM_INTENSITY = bloomArr[0];
-                }
-                ImGui.popID();
-
-
                 ImGui.separator();
                 if(ImGui.checkbox("Black and White", BLACK_AND_WHITE_ON)){
                     BLACK_AND_WHITE_ON = !BLACK_AND_WHITE_ON;
@@ -246,21 +235,26 @@ public class ImGuiLayer {
 
                 //LIGHTS
                 ImGui.separator();
-                //color picker, d-light direction
+                //d-light direction
                 Vector3f dir = scene.getLightsRenderer().directionalLight.getDirection();
                 float[] dd = {dir.x, dir.y, dir.z};
+                ImGui.pushID(110901);
                 ImGui.text("Directional light direction");
                 if(ImGui.sliderFloat3("##", dd, -1f, 1f)){
                     scene.getLightsRenderer().directionalLight.setDirection(new Vector3f(dd[0], dd[1], dd[2]));
+                    scene.getLightsRenderer().directionalLight.setPosition(new Vector3f(dd[0]*500, dd[1]*500, dd[2]*500));
                 }
+                ImGui.popID();
 
                 //d-light strength
                 float[] d = {scene.getLightsRenderer().directionalLight.getIntensity()};
+                ImGui.pushID(1257);
                 ImGui.text("Directional light intensity");
                 if(ImGui.sliderFloat("##", d, 0.0f, 10.0f)){
                     D_LIGHT_INTENSITY = d[0];
                     scene.getLightsRenderer().directionalLight.setIntensity(d[0]);
                 }
+                ImGui.popID();
 
 
                 //p-light strengths
@@ -271,7 +265,7 @@ public class ImGuiLayer {
                 if(ImGui.sliderFloat("##", pLi, 0.0f, 10000.0f)){
                     for(PointLight pointLight : scene.getLightsRenderer().pointLights){
                         P_LIGHT_INTENSITY = pLi[0];
-                        pointLight.setIntensity(P_LIGHT_INTENSITY);
+                        pointLight.setIntensity(pLi[0]);
                     }
                 }
                 ImGui.popID();

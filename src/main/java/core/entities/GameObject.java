@@ -22,7 +22,7 @@ public class GameObject {
         this.position = position;
         this.rotation = new Vector3f();
         this.scale = new Vector3f(scale);
-        this.mesh = new BasicMesh("assets/models/default_cube.obj");
+        this.mesh = new BasicMesh("assets/models/ico_sphere.fbx");
         this.material = new Material(color);
     }
 
@@ -35,7 +35,7 @@ public class GameObject {
     }
 
     public void update(float dt){
-        //this.rotation.y += 15f * dt;
+//        this.rotation.z += 15f * dt;
     }
 
     public void render(){

@@ -17,15 +17,14 @@ import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class Renderer {
-    private ImGuiLayer imGuiLayer = null;
+
     private BatchManager batchManager = null;
     private PostProcessingPipeline postProcessing = null;
     private final FrameBuffer fistPassframeBuffer;
     private final ShaderProgram shaderProgram;
 
     public Renderer(Scene scene){
-        this.imGuiLayer = new ImGuiLayer(Window.getWindow());
-        this.imGuiLayer.initImGui();
+
         this.postProcessing = new PostProcessingPipeline();
         if(scene.getClass().isAssignableFrom(Scene2D.class))
             this.batchManager = new BatchManager();
@@ -59,7 +58,7 @@ public class Renderer {
         this.batchManager.removeVertex(particle, index);
     }
 
-    public void render(Scene scene, float dt){
+    public void render(Scene scene, LightsRenderer lightsRenderer, float dt){
 
         defaultFramebuffer();
 
@@ -68,6 +67,8 @@ public class Renderer {
         if(WIRE_FRAME_MODE) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         if(batchManager != null) batchManager.render();
+
+        lightsRenderer.render();
 
         this.shaderProgram.bind();
         this.shaderProgram.uploadMat4fUniform("projectionMatrix", scene.camera.projectionMatrix());
@@ -89,7 +90,6 @@ public class Renderer {
         //-------------------------------------------------------------------//
 
         this.postProcessing.render(this.fistPassframeBuffer.getColorAttachment());
-        imGuiLayer.update(dt, scene);
     }
 
     public static void defaultFramebuffer(){
@@ -103,7 +103,6 @@ public class Renderer {
     }
 
     public void dispose(){
-        this.imGuiLayer.destroyImGui();
         if(this.batchManager != null)   this.batchManager.dispose();
         this.postProcessing.dispose();
         this.fistPassframeBuffer.dispose();

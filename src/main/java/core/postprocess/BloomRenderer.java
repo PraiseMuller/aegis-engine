@@ -45,7 +45,6 @@ public class BloomRenderer {
         this.extractBrightFragsShader.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/extract_bright_frags_fragment.glsl"));
         this.extractBrightFragsShader.link();
         this.extractBrightFragsShader.createUniform("srcTexture");
-        this.extractBrightFragsShader.createUniform("bloomIntensity");
 
         this.extractBrightFramebuffer = new FrameBuffer(false);
 
@@ -72,7 +71,6 @@ public class BloomRenderer {
         srcTexture.bind();
         this.extractBrightFragsShader.bind();
         this.extractBrightFragsShader.uploadIntUniform("srcTexture", srcTexture.getBindLocation());
-        this.extractBrightFragsShader.uploadFloatUniform("bloomIntensity", BLOOM_INTENSITY);
         this.renderQuad();
         this.extractBrightFragsShader.unbind();
         srcTexture.unbind();
