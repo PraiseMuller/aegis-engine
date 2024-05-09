@@ -2,23 +2,25 @@ package core.engine;
 
 public class StateMachine {
 
-    public enum State {
+    private enum State {
         PLAY, STOP,
     }
 
-    private static State currentState = State.PLAY;
+    private State currentState = State.PLAY;
 
-    private StateMachine(){};
+    public StateMachine(){
 
-    public static void changeState(){
-        if(StateMachine.currentState == State.STOP)
-            StateMachine.currentState = State.PLAY;
-        else
-            StateMachine.currentState = State.STOP;
     }
 
-    public static boolean play(){
-        return StateMachine.currentState == State.PLAY;
+    public void changeState(){
+        if(this.currentState == State.STOP)
+            this.currentState = State.PLAY;
+        else
+            this.currentState = State.STOP;
+    }
+
+    public boolean play(){
+        return this.currentState == State.PLAY;
     }
 
 }

@@ -8,8 +8,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="AEGIS Engine" />
         <module name="JADE_ENGINE" />
+        <module name="AEGIS Engine V-1.0.1." />
         <module name="OPEN-GL-001" />
-        <module name="AEGIS Engine V1.0.1" />
         <module name="OPEN-GL-003" />
         <module name="Breakout" />
         <module name="The Game Of Life" />

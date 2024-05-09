@@ -1,0 +1,21 @@
+TODO/NOTES:
+
+1.  Find a way to stop vertices that are not visible from the camera get light calculations or render.
+    (Scene graphs and Frustum culling. )
+2.  Make sure all framebuffers are not changing their color attachments. Rather have many framebuffers / ping-pong framebuffers.
+    than switch color attachments. Turns out this switching is costly on performance ?
+3.  Faster and cheaper blur. (Kawase Gaussian blur algorithm?)
+4.  Lerp all camera transformations.
+4.1.Depth of field.
+5.  Texture picking / ray casting.
+6.  Rendering the quad for post processing. Is using FloatBuffers (in glGenbuffers()) really necessary ? Or i could just send normal
+    float arrays instead? Also do i HAVE to use an indices array ? It is just a quad after all. Which is better/faster ?
+7.  A cool effect. Use non-floating a point framebuffer for post processing and watch this wierd effect.
+8.  In-depth research into OpenGL textures more. Especially, what the hell is the internal format. Hell to debug, with
+    very weird errors occurring when i use floating point framebuffers. (GL_R11F_G11F_B10F) <- One of the formats.
+6.  Multi-threading for menus and loading screens and such.
+7.  Somethings up with the framebuffers. Changing ths state of  glEnable(GL_DEPTH_TEST);    when binding and unbinding a
+    framebuffer results in huge spikes in changes of the fps.   glEnable(GL_CULL_FACE);
+8.  IBL.
+9.  Stop sending junk to the gpu every frame. serious optimization area here.
+10. Choose a different tone-mapping algorithm. (ACES is looking really weird on light emitters).

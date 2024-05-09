@@ -25,7 +25,7 @@ public class Scene2D extends Scene {
     @Override
     public void init(){
         this.camera = new Camera2D();
-        this.sceneRenderer = new Renderer(this);
+        this.sceneRenderer = new Renderer();
 
         //INITIALIZE AND ADD GAME-OBJECTS TO SCENE
         this.gameObjects = new ArrayList<>();
@@ -41,13 +41,17 @@ public class Scene2D extends Scene {
     @Override
     public void update(float dt){
 
+        /////////////----OLD STUFF----deprecated hehe :-) -------------------//////////////////////////////////////////
+
         //update if clicked, add particles
-        if(StateMachine.play()){// && Input.isDragging()){
-            Particle particle = new Particle(  new Vector2f((float) Math.random() * 2 * WIN_WIDTH, 0) );
-            this.particles.add(particle);
-            this.sceneRenderer.addVertex(particle);
-            pCount++;
-        }
+//        if(StateMachine.play()){// && Input.isDragging()){
+//            Particle particle = new Particle(  new Vector2f((float) Math.random() * 2 * WIN_WIDTH, 0) );
+//            this.particles.add(particle);
+//            this.sceneRenderer.addVertex(particle);
+//            pCount++;
+//        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //THE LOGIC
         for(int i = 0; i < this.particles.size(); i++) {

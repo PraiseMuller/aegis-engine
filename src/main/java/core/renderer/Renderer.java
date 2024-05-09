@@ -3,31 +3,27 @@ package core.renderer;
 import core.engine.Scene;
 import core.engine._2D.BatchManager;
 import core.engine._2D.Particle;
-import core.engine._2D.Scene2D;
 import core.entities.GameObject;
-import core.postprocess.FrameBuffer;
-import core.postprocess.PostProcessingPipeline;
 import core.utils.AssetPool;
+import org.joml.Matrix4f;
+
+import java.util.ArrayList;
 
 import static core.utils.SETTINGS.*;
-import static core.utils.SETTINGS.BLACK;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_FILL;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class Renderer {
 
-    private BatchManager batchManager = null;
-    private PostProcessingPipeline postProcessing = null;
-    private final FrameBuffer fistPassframeBuffer;
+    private final int MAX_NUM_BONES = 200;
+    private final BatchManager batchManager = null;
+    private final PostProcessingPipeline postProcessing;
+    private final FrameBuffer fistPassFrameBuffer;
     private final ShaderProgram shaderProgram;
+    private final ScreenQuad finalScreenQuad;    // <-----the final screen;
 
-    public Renderer(Scene scene){
+    public Renderer(){
 
         this.postProcessing = new PostProcessingPipeline();
-        if(scene.getClass().isAssignableFrom(Scene2D.class))
-            this.batchManager = new BatchManager();
 
         this.shaderProgram = new ShaderProgram();
         this.shaderProgram.createVertexShader(AssetPool.getShader("assets/shaders/base/vertex.glsl"));
@@ -37,75 +33,98 @@ public class Renderer {
         this.shaderProgram.createUniform("projectionMatrix");
         this.shaderProgram.createUniform("viewMatrix");
         this.shaderProgram.createUniform("modelMatrix");
+//        this.shaderProgram.createUniform("gDisplayBoneIndex");
         this.shaderProgram.createMaterialUniform("material");
         this.shaderProgram.createDirectionalLightUniform("directionalLight");
-        for(int i = 0; i < NUM_P_LIGHTS; i++) {
+        for(int i = 0; i < NUM_P_LIGHTS; i++)
             this.shaderProgram.createPointLightUniform("pointLight[" + i + "]");
-        }
 
-        this.fistPassframeBuffer = new FrameBuffer(true);
+//        for(int i = 0; i < MAX_NUM_BONES; i++)
+//            this.shaderProgram.createUniform("gBones[" + i + "]");
+
+        this.fistPassFrameBuffer = new FrameBuffer(true);
+        this.finalScreenQuad = new ScreenQuad();
     }
 
     public void addVertex(Particle particle){
         this.batchManager.addVertex(particle);
     }
-
     public void updateVertex(Particle particle, int index){
         this.batchManager.updateVertex(particle, index);
     }
-
     public void removeVertex(Particle particle, int index){
         this.batchManager.removeVertex(particle, index);
     }
 
-    public void render(Scene scene, LightsRenderer lightsRenderer, float dt){
+    public void render(Scene scene){
 
-        defaultFramebuffer();
+        //-----draw scene into a fbo to extract the texture.----------------------------------------------------------//
+        this.fistPassFrameBuffer.bind();
 
-        //-----draw scene into a fbo to extract the texture.-----------------------//
-        this.fistPassframeBuffer.bind();
         if(WIRE_FRAME_MODE) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        if(batchManager != null) batchManager.render();
+        //draw cubemap first
+        //Scene3D scene3D = (Scene3D) scene;
+        //scene3D.cubeMap().render(scene);
 
-        lightsRenderer.render();
+        if(batchManager != null) batchManager.render();
+        scene.getLightsRenderer().render(scene);
 
         this.shaderProgram.bind();
         this.shaderProgram.uploadMat4fUniform("projectionMatrix", scene.camera.projectionMatrix());
         this.shaderProgram.uploadMat4fUniform("viewMatrix", scene.camera.viewMatrix());
+//        this.shaderProgram.uploadIntUniform("gDisplayBoneIndex", G_DISPLAY_BONE_INDEX);
         this.shaderProgram.setUniform("directionalLight", scene.getLightsRenderer().directionalLight);
         for(int i = 0; i < NUM_P_LIGHTS; i++)
             this.shaderProgram.setUniform("pointLight["+ i +"]", scene.getLightsRenderer().pointLights.get(i));
 
         for(GameObject gameObject : scene.getGameObjects()) {
 
+            //animation stuff
+//            ArrayList<Matrix4f> transforms = new ArrayList<>();
+//            gameObject.getMesh().getBoneTransforms(transforms);
+
+//            for(int i = 0; i < transforms.size(); i++){
+//                //System.out.println("\n"+transforms.get(i));
+//                this.shaderProgram.uploadMat4fUniform("gBones["+i+"]", transforms.get(i));
+//            }
+
             this.shaderProgram.uploadMat4fUniform("modelMatrix", scene.camera.modelMatrix(gameObject));
             this.shaderProgram.setUniform("material", gameObject.getMaterial());
             gameObject.render();
+
+//            transforms.clear();
+//            transforms = null;
         }
         this.shaderProgram.unbind();
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        this.fistPassframeBuffer.unbind();
-        //-------------------------------------------------------------------//
+        this.fistPassFrameBuffer.unbind();
+        //--------------------------------------------------------------------------------------------------------------//
 
-        this.postProcessing.render(this.fistPassframeBuffer.getColorAttachment());
-    }
+        //Render and apply all post-processing effects, then draw final screen
+        if(POST_PROCESSING) {
 
-    public static void defaultFramebuffer(){
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
+            Texture sceneMip = this.fistPassFrameBuffer.getColorAttachment();
+            this.postProcessing.render(sceneMip);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
-        glClearColor(BLACK.x, BLACK.y, BLACK.z, BLACK.w);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            Texture bloomMip = this.postProcessing.getBloomTexture();
+            Texture flareMip = this.postProcessing.getLensFlareTexture();
+            this.finalScreenQuad.render(sceneMip, bloomMip, flareMip);                                //   100% NICE
+        }
+        else{
+
+            //We don't get to do the cool stuff :-(
+            Texture sceneMip = this.fistPassFrameBuffer.getColorAttachment();
+            this.finalScreenQuad.render(sceneMip, sceneMip, sceneMip);// blending the same texture 3x ? Refactor this later.
+        }
     }
 
     public void dispose(){
-        if(this.batchManager != null)   this.batchManager.dispose();
+        if(this.batchManager != null)   this.batchManager.dispose();    // Hehe a tip ;-)
         this.postProcessing.dispose();
-        this.fistPassframeBuffer.dispose();
+        this.fistPassFrameBuffer.dispose();
         this.shaderProgram.dispose();
+        this.finalScreenQuad.dispose();
     }
 }

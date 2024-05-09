@@ -7,30 +7,31 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL30.GL_R11F_G11F_B10F;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Texture {
+
     private final int textureId, bindLocation;
     private IntBuffer width, height, channel;
 
-//    public Texture(Texture texture){              ?????? Doesnt work ?
-//
-//    }
+    public Texture(){
+        throw new RuntimeException("That's a no no. Calling my constructor like that.");
+    }
 
     public Texture(int width, int height, int slot){
+
         this.bindLocation = slot;
 
         this.textureId = glGenTextures();
         glActiveTexture( GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, this.textureId);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -38,14 +39,15 @@ public class Texture {
     }
 
     public Texture(int width, int height, int slot, boolean mipTexture){
+
         this.bindLocation = slot;
 
         this.textureId = glGenTextures();
         glActiveTexture( GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, this.textureId);
 
-        // we are downscaling an HDR color buffer, so we need a float texture format
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R11F_G11F_B10F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+        //float texture format
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -56,16 +58,17 @@ public class Texture {
     }
 
     public Texture(String texLocation, int slot){
+
         this.bindLocation = slot;
         this.textureId = glGenTextures();
         glActiveTexture( GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, this.textureId);
 
         // set the texture wrapping/filtering options (on currently bound texture)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         //load image texture
         ByteBuffer image = loadImage(texLocation);
@@ -81,9 +84,7 @@ public class Texture {
             throw new RuntimeException("Unsupported number of channels in image: \""+ texLocation +"\"");
         }
 
-        //System.err.println("nChannels:  "+ channel.get(0));
-
-        glGenerateMipmap(GL_TEXTURE_2D);
+        //glGenerateMipmap(GL_TEXTURE_2D);
 
         stbi_image_free(image);
         glBindTexture(GL_TEXTURE_2D, 0);

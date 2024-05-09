@@ -10,34 +10,37 @@ import static core.utils.SETTINGS.CAMERA_INIT_POS;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Input {
+    private static final Vector3f delta = new Vector3f();
+    private static final Vector3f cameraRot = new Vector3f();
     private Input(){}
 
     public static void update(float dt, Scene scene){
-        Vector3f delta = new Vector3f();
-        Vector3f cameraRot = new Vector3f();
+
+        delta.zero();
+        cameraRot.zero();
 
         //CAM POS
-        float cameraMoveSpeed = 40.0f;
-        if (KeyListener.isKeyPressed(GLFW_KEY_W))   delta.add(new Vector3f(0.0f, 0.0f, -cameraMoveSpeed * dt));
-        if (KeyListener.isKeyPressed(GLFW_KEY_S))   delta.add(new Vector3f(0.0f, 0.0f, cameraMoveSpeed * dt));
+        float cameraMoveSpeed = MOUSE_SENSITIVITY;
+        if (KeyListener.isKeyPressed(GLFW_KEY_W))   delta.z = -cameraMoveSpeed * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_S))   delta.z =  cameraMoveSpeed * dt;
 
-        if (KeyListener.isKeyPressed(GLFW_KEY_D))   delta.add(new Vector3f(cameraMoveSpeed * dt, 0.0f, 0.0f));
-        if (KeyListener.isKeyPressed(GLFW_KEY_A))   delta.add(new Vector3f(-cameraMoveSpeed * dt, 0.0f, 0.0f));
+        if (KeyListener.isKeyPressed(GLFW_KEY_D))   delta.x =  cameraMoveSpeed * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_A))   delta.x = -cameraMoveSpeed * dt;
 
-        if (KeyListener.isKeyPressed(GLFW_KEY_Q))   delta.add(new Vector3f(0.0f, cameraMoveSpeed * dt, 0.0f));
-        if (KeyListener.isKeyPressed(GLFW_KEY_E))   delta.add(new Vector3f(0.0f, -cameraMoveSpeed * dt, 0.0f));
+        if (KeyListener.isKeyPressed(GLFW_KEY_Q))   delta.y =  cameraMoveSpeed * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_E))   delta.y = -cameraMoveSpeed * dt;
 
         //CAM ROT
         if (KeyListener.isKeyPressed(GLFW_KEY_LEFT))    cameraRot.y = -MOUSE_SENSITIVITY * dt;
         if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT))   cameraRot.y = MOUSE_SENSITIVITY * dt;
-        if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_UP))     cameraRot.x = MOUSE_SENSITIVITY * dt;
-        if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_DOWN))   cameraRot.x = -MOUSE_SENSITIVITY * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_UP)) cameraRot.x = MOUSE_SENSITIVITY * dt;
+        if (KeyListener.isKeyPressed(GLFW_KEY_PAGE_DOWN))   cameraRot.x = -MOUSE_SENSITIVITY  * dt;
 
-        if(MouseListener.isDragging()) {
-            cameraRot.x = -MouseListener.getDy() * MOUSE_SENSITIVITY / 1000.0f;
-            cameraRot.y = -MouseListener.getDx() * MOUSE_SENSITIVITY / 1000.0f;
-            cameraRot.z = 0.0f;
-        }
+//        if(MouseListener.isDragging()) {
+//            cameraRot.x = -MouseListener.getDy() * MOUSE_SENSITIVITY / 1000.0f;
+//            cameraRot.y = -MouseListener.getDx() * MOUSE_SENSITIVITY / 1000.0f;
+//            cameraRot.z = 0.0f;
+//        }
 
         //MOVE CAMERA
         scene.getCamera().movePosition(delta.x, -delta.y, delta.z);
@@ -49,11 +52,13 @@ public class Input {
         }
 
         if(KeyListener.isKeyPressed(GLFW_KEY_SPACE)){
-            StateMachine.changeState();
+            scene.stateMachine().changeState();
+            G_DISPLAY_BONE_INDEX++;
+            if(G_DISPLAY_BONE_INDEX > 4) G_DISPLAY_BONE_INDEX = 0;
         }
 
 
-        //RELOAD CURRENT SCENE
+        //RELOAD CURRENT CAMERA
         if(KeyListener.isKeyPressed(GLFW_KEY_R)){
             scene.camera.getPosition().x = CAMERA_INIT_POS.x;
             scene.camera.getPosition().y = CAMERA_INIT_POS.y;

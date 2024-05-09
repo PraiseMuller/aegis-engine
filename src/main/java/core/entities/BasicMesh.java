@@ -4,9 +4,7 @@ import core.utils.AssetPool;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AIFace;
-import org.lwjgl.assimp.AIMesh;
-import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.*;
 
 import java.util.ArrayList;
 
@@ -28,16 +26,17 @@ public class BasicMesh {
     private final ArrayList<Integer> indices;
 
     public BasicMesh(String modelFileLocation){
+
         this.basicMeshEntries = new ArrayList<>();
         this.positions = new ArrayList<>();
         this.normals = new ArrayList<>();
         this.texCords = new ArrayList<>();
         this.indices = new ArrayList<>();
 
-        this.loadMesh(modelFileLocation);
+        _loadMesh(modelFileLocation);
     }
 
-    private void loadMesh(String fileLocation){
+    private void _loadMesh(String fileLocation){
 
         this.vao = glGenVertexArrays();
         glBindVertexArray(this.vao);
@@ -47,14 +46,14 @@ public class BasicMesh {
 
         AIScene aiScene = aiImportFile(fileLocation, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
         assert aiScene != null;
-        countVerticesAndIndices(aiScene);
-        initAllMeshes(aiScene);
-        populateBuffers();
+        _countVerticesAndIndices(aiScene);
+        _initAllMeshes(aiScene);
+        _populateBuffers();
 
         glBindVertexArray(0);
     }
 
-    private void countVerticesAndIndices(AIScene aiScene){
+    private void _countVerticesAndIndices(AIScene aiScene){
 
         int numVertices = 0, numIndices = 0;
         PointerBuffer pointerBuffer = aiScene.mMeshes();
@@ -75,16 +74,16 @@ public class BasicMesh {
         }
     }
 
-    private void initAllMeshes(AIScene aiScene){
+    private void _initAllMeshes(AIScene aiScene){
 
         PointerBuffer pointerBuffer = aiScene.mMeshes();
         for(int i = 0; i < pointerBuffer.limit(); i++) {
             AIMesh aiMesh = AIMesh.create(pointerBuffer.get(i));
-            this.initSingleMesh(aiMesh);
+            _initSingleMesh(aiMesh, i);
         }
     }
 
-    private void initSingleMesh(AIMesh aiMesh){
+    private void _initSingleMesh(AIMesh aiMesh, int meshIndex){
 
         //populate vertex attributes
         for(int i = 0; i < aiMesh.mVertices().limit(); i++){
@@ -105,13 +104,10 @@ public class BasicMesh {
                 this.indices.add(aiFace.mIndices().get(1));
                 this.indices.add(aiFace.mIndices().get(2));
             }
-            else{
-                System.err.println("BasicMesh.java. Populating index buffer.    LN-109.");
-            }
         }
     }
 
-    private void populateBuffers(){
+    private void _populateBuffers(){
 
         glBindBuffer(GL_ARRAY_BUFFER, this.attributeBuffers[0]);
         glBufferData(GL_ARRAY_BUFFER, AssetPool.toFloatArr(this.positions), GL_STATIC_DRAW);

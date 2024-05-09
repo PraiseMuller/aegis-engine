@@ -9,6 +9,7 @@ import core.utils.AssetPool;
 import core.utils.Time;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.glfw.GLFWVidMode;
 
 import java.util.Objects;
 
@@ -66,7 +67,7 @@ public class Window {
 
         GLFWImage image = GLFWImage.malloc();
         GLFWImage.Buffer imagebf = GLFWImage.malloc(1);
-        image.set(474, 474, AssetPool.loadImage("assets/images/icon.png"));
+        image.set(474, 474, AssetPool.loadImage("assets/images/logos/icon.png"));
         imagebf.put(0, image);
         glfwSetWindowIcon(window, imagebf);
 
@@ -111,11 +112,15 @@ public class Window {
         float endTime;
 
         while(!glfwWindowShouldClose(window)){
+
             glfwPollEvents();
 
             if(dt > 0){
+
                 currentScene.updateInputs(dt);
-                if(StateMachine.play()) currentScene.update(dt);
+                if(currentScene.stateMachine().play()) {
+                    currentScene.update(dt);
+                }
 
                 currentScene.render(dt);
             }
@@ -127,6 +132,7 @@ public class Window {
             startTime = endTime;
         }
 
+        //exit
         cleanup();
     }
 

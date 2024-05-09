@@ -1,6 +1,8 @@
 package core.renderer;
 
 import core.engine.Scene;
+import core.entities.GameObject;
+import core.entities.Material;
 import core.inputs.KeyListener;
 import core.inputs.MouseListener;
 import core.engine.StateMachine;
@@ -173,8 +175,7 @@ public class ImGuiLayer {
 
         // Fonts merge example
         fontConfig.setPixelSnapH(true);
-        //fontAtlas.addFontFromFileTTF("assets/fonts/jm-nexus-grotesque.ttf", 25, fontConfig);
-        fontAtlas.addFontFromFileTTF("assets/fonts/marsh-thing-bold.ttf", 24, fontConfig);
+        fontAtlas.addFontFromFileTTF("assets/fonts/JetBrainsMonoNL-Regular.ttf", 18, fontConfig);
 
         fontConfig.destroy(); // After all fonts were added we don't need this config more
 
@@ -189,21 +190,22 @@ public class ImGuiLayer {
     }
 
     // Main application loop
-    public void render(float dt, Scene scene) {
+    public void render(Scene scene, float dt) {
         startFrame(dt);
 
         // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
         ImGui.newFrame();
                 //game.updateImgui(dt);
-                ImGui.text("FPS: " + 1/dt);
-                ImGui.text("Time Elapsed: "+ Time.get() + " sec.\n");
-                if(StateMachine.play()) ImGui.text("State: Running\n");
+                ImGui.text("FPS: " + (int) (1/dt));
+                ImGui.text("Time Elapsed: "+ _getFormattedTime());
+                ImGui.separator();
+                if(scene.stateMachine().play()) ImGui.text("State: Running\n");
                 else ImGui.text("State: Stopped\n");
                 ImGui.text("Camera Position: " + Window.currentCamera().getPosition());
                 ImGui.text("Camera Rotation: " + Window.currentCamera().getRotation());
                 ImGui.text("Res: " + WIN_WIDTH + " x " + WIN_HEIGHT);
 
-
+                ImGui.separator();
                 if(ImGui.checkbox("Gamma correction", GAMMA_CORRECT)){
                     GAMMA_CORRECT = !GAMMA_CORRECT;
                 }
@@ -214,8 +216,8 @@ public class ImGuiLayer {
                 }
 
                 ImGui.separator();
-                if(ImGui.checkbox("Bloom", BLOOM_ON)){
-                    BLOOM_ON = !BLOOM_ON;
+                if(ImGui.checkbox("Post processing stuff", POST_PROCESSING)){
+                    POST_PROCESSING = !POST_PROCESSING;
                 }
 
                 ImGui.separator();
@@ -247,10 +249,11 @@ public class ImGuiLayer {
                 ImGui.popID();
 
                 //d-light strength
+                ImGui.separator();
                 float[] d = {scene.getLightsRenderer().directionalLight.getIntensity()};
                 ImGui.pushID(1257);
                 ImGui.text("Directional light intensity");
-                if(ImGui.sliderFloat("##", d, 0.0f, 10.0f)){
+                if(ImGui.sliderFloat("##", d, 0.0f, 2.0f)){
                     D_LIGHT_INTENSITY = d[0];
                     scene.getLightsRenderer().directionalLight.setIntensity(d[0]);
                 }
@@ -269,6 +272,46 @@ public class ImGuiLayer {
                     }
                 }
                 ImGui.popID();
+
+
+
+                //Object Picking?
+                GameObject obj = scene.getGameObjects().get(0);
+                Material mat = obj.getMaterial();
+                ImGui.begin("Active Object: " + obj);
+
+                ImGui.pushID(1501);
+                float[] scale = {obj.getScale().x};
+                ImGui.text("Scale:");
+                if(ImGui.sliderFloat("##", scale, 0.01f, 1.0f)){
+                    obj.setScale(scale[0], scale[0], scale[0]);
+                }
+                ImGui.popID();
+
+                float[] v = {mat.getColor().x, mat.getColor().y, mat.getColor().z};
+                ImGui.text("Base color:");
+                if(ImGui.colorPicker3("##", v)){
+                    mat.setColor(new Vector3f(v[0], v[1], v[2]));
+                }
+
+                ImGui.pushID(111);
+                float[] metallic = {mat.getMetallicVal()};
+                ImGui.text("Metallic:");
+                if(ImGui.sliderFloat("##", metallic, 0, 1)){
+                    mat.setMetallicVal(metallic[0]);
+                }
+                ImGui.popID();
+
+                ImGui.pushID(11001);
+                float[] roughness = {mat.getRoughnessVal()};
+                ImGui.text("Roughness:");
+                if(ImGui.sliderFloat("##", roughness, 0.055f, 1)){
+                    mat.setRoughnessVal(roughness[0]);
+                }
+                ImGui.popID();
+
+
+                ImGui.end();
 
         ImGui.render();
 
@@ -295,6 +338,19 @@ public class ImGuiLayer {
         final int imguiCursor = ImGui.getMouseCursor();
         glfwSetCursor(windowPtr, mouseCursors[imguiCursor]);
         glfwSetInputMode(windowPtr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    private String  _getFormattedTime(){
+
+        int t = (int) Time.get();
+        return (
+                (int) Math.floor(t/3600)
+                +" hr : "+
+                (int) Math.floor((t % 3600) / 60)
+                +" min : "+
+                t % 60
+                +" sec."
+        );
     }
 
     private void endFrame() {

@@ -12,7 +12,7 @@ uniform sampler2D srcTexture;
 uniform vec2 srcResolution;
 
 in vec2 fTextCoords;
-layout (location = 0) out vec4 downsample;
+layout (location = 0) out vec3 downsample;
 
 void main()
 {
@@ -27,22 +27,22 @@ void main()
     // - l - m -
     // g - h - i
     // === ('e' is the current texel) ===
-    vec4 a = texture(srcTexture, vec2(fTextCoords.x - 2*x, fTextCoords.y + 2*y));
-    vec4 b = texture(srcTexture, vec2(fTextCoords.x,       fTextCoords.y + 2*y));
-    vec4 c = texture(srcTexture, vec2(fTextCoords.x + 2*x, fTextCoords.y + 2*y));
+    vec3 a = texture(srcTexture, vec2(fTextCoords.x - 2*x, fTextCoords.y + 2*y)).rgb;
+    vec3 b = texture(srcTexture, vec2(fTextCoords.x,       fTextCoords.y + 2*y)).rgb;
+    vec3 c = texture(srcTexture, vec2(fTextCoords.x + 2*x, fTextCoords.y + 2*y)).rgb;
 
-    vec4 d = texture(srcTexture, vec2(fTextCoords.x - 2*x, fTextCoords.y));
-    vec4 e = texture(srcTexture, vec2(fTextCoords.x,       fTextCoords.y));
-    vec4 f = texture(srcTexture, vec2(fTextCoords.x + 2*x, fTextCoords.y));
+    vec3 d = texture(srcTexture, vec2(fTextCoords.x - 2*x, fTextCoords.y)).rgb;
+    vec3 e = texture(srcTexture, vec2(fTextCoords.x,       fTextCoords.y)).rgb;
+    vec3 f = texture(srcTexture, vec2(fTextCoords.x + 2*x, fTextCoords.y)).rgb;
 
-    vec4 g = texture(srcTexture, vec2(fTextCoords.x - 2*x, fTextCoords.y - 2*y));
-    vec4 h = texture(srcTexture, vec2(fTextCoords.x,       fTextCoords.y - 2*y));
-    vec4 i = texture(srcTexture, vec2(fTextCoords.x + 2*x, fTextCoords.y - 2*y));
+    vec3 g = texture(srcTexture, vec2(fTextCoords.x - 2*x, fTextCoords.y - 2*y)).rgb;
+    vec3 h = texture(srcTexture, vec2(fTextCoords.x,       fTextCoords.y - 2*y)).rgb;
+    vec3 i = texture(srcTexture, vec2(fTextCoords.x + 2*x, fTextCoords.y - 2*y)).rgb;
 
-    vec4 j = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y + y));
-    vec4 k = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y + y));
-    vec4 l = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y - y));
-    vec4 m = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y - y));
+    vec3 j = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y + y)).rgb;
+    vec3 k = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y + y)).rgb;
+    vec3 l = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y - y)).rgb;
+    vec3 m = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y - y)).rgb;
 
     // Apply weighted distribution:
     // 0.5 + 0.125 + 0.125 + 0.125 + 0.125 = 1
@@ -61,8 +61,4 @@ void main()
     downsample += (a+c+g+i)*0.03125;
     downsample += (b+d+f+h)*0.0625;
     downsample += (j+k+l+m)*0.125;
-
-
-
-    //BLURR
 }

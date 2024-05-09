@@ -3,6 +3,8 @@
 in vec2 fTexCords;
 in vec3 fNormal;
 in vec3 fPos;
+//flat in ivec4 fBoneId;
+//in vec4 fWeight;
 
 out vec4 color;
 
@@ -26,11 +28,13 @@ struct PointLight {
 
 const int NUM_P_LIGHTS = 4;
 const float PI = 3.14159265359f;
+const int MAX_BONES_PER_VERTEX = 4;
 
 uniform Material material;
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLight[NUM_P_LIGHTS];
 uniform mat4 viewMatrix;
+//uniform int gDisplayBoneIndex;
 
 //f(n) prototypes
 vec4 getDlComponent(vec3 F0, vec4 albedo, float roughness);
@@ -39,6 +43,7 @@ float ndfGGX(float nDotH, float alpha);
 float schlickGGX(float nDotV,float nDotL, float alpha);
 
 void main(){
+
     vec4 albedo = vec4(material.color, 1.0f);
     vec4 ao = vec4(0.01);
     float roughness = material.roughness;
@@ -52,7 +57,7 @@ void main(){
 
     for(int i = 0; i < NUM_P_LIGHTS; i++){
         //1st change to view space coordinates
-        vec3 pointLightPos = (vec4(pointLight[i].position, 0.0f) * viewMatrix).xyz;
+        vec3 pointLightPos = (vec4(pointLight[i].position, 1.0f) * viewMatrix).xyz;
 
         vec3 l = normalize(pointLightPos);//Z - fPos);
         vec3 n = normalize(fNormal);
@@ -84,6 +89,29 @@ void main(){
     //ambient lighting
     vec4 ambient = vec4(0.03) * ao * albedo;
     color = Lo + ambient;
+
+//    ///debug anim
+//    bool found = false;
+//    for(int i = 0; i < MAX_BONES_PER_VERTEX; i++){
+//        if(fBoneId[i] == gDisplayBoneIndex){
+//            if(fWeight[i] >= 0.7f){
+//                color = vec4(1.0f, 0.0f, 0.0f, 0.0f) * fWeight[i];
+//            }
+//            else if(fWeight[i] >= 0.4f && fWeight[i] < 0.7f){
+//                color = vec4(0.0f, 1.0f, 0.0f, 0.0f) * fWeight[i];
+//            }
+//            else if(fWeight[i] >= 0.0f && fWeight[i] < 0.4f){
+//                color = vec4(1.0f, 1.0f, 0.0f, 0.0f) * fWeight[i];
+//            }
+//
+//            found = true;
+//            break;
+//        }
+//    }
+//
+//    if(!found){
+//        color = vec4(0,0,1,0);
+//    }
 }
 
 vec4 getDlComponent(vec3 F0, vec4 albedo, float roughness){

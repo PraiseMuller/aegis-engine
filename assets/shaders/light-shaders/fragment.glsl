@@ -10,7 +10,7 @@ void main(){
 
     vec4 temp;
     if(isDirLight == 1)
-        temp = vec4(fColor, 1.0f) * intensity * 6;
+        temp = vec4(fColor, 1.0f) * intensity * 20;
     else
         temp = vec4(fColor, 1.0f) * intensity / 150;
 

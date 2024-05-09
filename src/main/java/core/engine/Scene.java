@@ -10,9 +10,10 @@ public abstract class Scene {
     protected Renderer sceneRenderer = null;
     protected ArrayList<GameObject> gameObjects = null;
     public Camera camera;
+    public StateMachine stateMachine;
 
     public Scene(){
-
+        this.stateMachine = new StateMachine();
     }
 
     public abstract void init();
@@ -22,6 +23,9 @@ public abstract class Scene {
     public abstract void dispose();
     public Camera getCamera(){
         return null;
+    }
+    public StateMachine stateMachine(){
+        return this.stateMachine;
     }
     public ArrayList<GameObject> getGameObjects(){
         return null;

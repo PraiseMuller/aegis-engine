@@ -4,8 +4,9 @@ import core.renderer.Texture;
 import org.joml.Vector2f;
 
 public class Mip {
-    public Vector2f size;
-    public Texture texture;
+
+    protected Vector2f size;
+    protected Texture texture;
 
     public Mip(){
 

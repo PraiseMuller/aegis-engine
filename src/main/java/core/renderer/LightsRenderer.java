@@ -1,5 +1,6 @@
 package core.renderer;
 
+import core.engine.Scene;
 import core.lighting.DirectionalLight;
 import core.lighting.PointLight;
 import core.utils.AssetPool;
@@ -20,8 +21,8 @@ public class LightsRenderer {
 
         int n = 100;
         this.pointLights = new ArrayList<>();
-        this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(n, n, n), P_LIGHT_INTENSITY));
-        this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(1.0f, 0.5f, 0.5f), new Vector3f(n, n, n), P_LIGHT_INTENSITY));
+        this.pointLights.add(new PointLight(new Vector3f(0.5f, 0.5f, 1.0f), new Vector3f(-n, n, -n), P_LIGHT_INTENSITY));
         this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(n, n, -n), P_LIGHT_INTENSITY));
         this.pointLights.add(new PointLight(new Vector3f(1.0f), new Vector3f(-n, n, n), P_LIGHT_INTENSITY));
 
@@ -40,14 +41,15 @@ public class LightsRenderer {
         this.shaderProgram.createUniform("isDirLight");
     }
 
-    public void render() {
+    public void render(Scene scene) {
 
         this.shaderProgram.bind();
-        this.shaderProgram.uploadMat4fUniform("uProjection", Window.currentCamera().projectionMatrix());
-        this.shaderProgram.uploadMat4fUniform("uView", Window.currentCamera().viewMatrix() );
+        this.shaderProgram.uploadMat4fUniform("uProjection",scene.camera.projectionMatrix());
+        this.shaderProgram.uploadMat4fUniform("uView", scene.camera.viewMatrix() );
 
+        //draw point lights
         for (PointLight pointLight : this.pointLights) {
-            this.shaderProgram.uploadMat4fUniform("uModel", Window.currentCamera().modelMatrix(  pointLight  ));
+            this.shaderProgram.uploadMat4fUniform("uModel", scene.camera.modelMatrix(  pointLight  ));
             this.shaderProgram.uploadVec3fUniform("fColor", pointLight.getColor());
             this.shaderProgram.uploadFloatUniform("intensity", pointLight.getIntensity());
             this.shaderProgram.uploadIntUniform("isDirLight", 0);
@@ -56,7 +58,7 @@ public class LightsRenderer {
         }
 
         //draw directional light
-        this.shaderProgram.uploadMat4fUniform("uModel", Window.currentCamera().modelMatrix(  directionalLight ));
+        this.shaderProgram.uploadMat4fUniform("uModel",scene.camera.modelMatrix(  directionalLight ));
         this.shaderProgram.uploadVec3fUniform("fColor", directionalLight.getColor());
         this.shaderProgram.uploadFloatUniform("intensity", directionalLight.getIntensity());
         this.shaderProgram.uploadIntUniform("isDirLight", 1);

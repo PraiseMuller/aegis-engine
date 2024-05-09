@@ -57,9 +57,19 @@ public class GameObject {
     public Vector3f getScale(){
         return this.scale;
     }
+    public void setScale(float x, float y, float z) {
+        this.scale.x = x;
+        this.scale.y = y;
+        this.scale.z = z;
+    }
     public Material getMaterial(){
         return this.material;
     }
+
+    public BasicMesh getMesh() {
+        return mesh;
+    }
+
     public void dispose(){
         this.mesh.dispose();
         this.material.dispose();

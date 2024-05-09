@@ -1,5 +1,6 @@
 package core.postprocess;
 
+import core.renderer.FrameBuffer;
 import core.renderer.ShaderProgram;
 import core.renderer.Texture;
 import core.utils.AssetPool;
@@ -15,15 +16,16 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
 
 public class BloomRenderer {
+
     private int vao;
     private final BloomFramebuffer bloomFramebuffer;
-    private final FrameBuffer extractBrightFramebuffer;
+    private final FrameBuffer utilityFramebuffer;
     private final ShaderProgram downsampleShader;
     private final ShaderProgram upsampleShader;
     private final ShaderProgram extractBrightFragsShader;
+    private final ShaderProgram gaussianBlurShader;
 
     public BloomRenderer(int windowWidth, int windowHeight) {
-        this.vao= 0;
 
         this.downsampleShader = new ShaderProgram();
         this.downsampleShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
@@ -31,7 +33,6 @@ public class BloomRenderer {
         this.downsampleShader.link();
         this.downsampleShader.createUniform("srcTexture");
         this.downsampleShader.createUniform("srcResolution");
-
 
         this.upsampleShader = new ShaderProgram();
         this.upsampleShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
@@ -46,39 +47,47 @@ public class BloomRenderer {
         this.extractBrightFragsShader.link();
         this.extractBrightFragsShader.createUniform("srcTexture");
 
-        this.extractBrightFramebuffer = new FrameBuffer(false);
+        this.gaussianBlurShader = new ShaderProgram();
+        this.gaussianBlurShader.createVertexShader(AssetPool.getShader("assets/shaders/post-processing/vertex.glsl"));
+        this.gaussianBlurShader.createFragmentShader(AssetPool.getShader("assets/shaders/post-processing/gaussian_blur_fragment.glsl"));
+        this.gaussianBlurShader.link();
+        this.gaussianBlurShader.createUniform("srcTexture");
+        this.gaussianBlurShader.createUniform("horizontal");
 
         // Framebuffer
-        int num_bloom_mips = 9; // Experiment with this value
+        int num_bloom_mips = 4; // Experiment with this value
         this.bloomFramebuffer = new BloomFramebuffer(windowWidth, windowHeight, num_bloom_mips);
+        this.utilityFramebuffer = new FrameBuffer(false);
     }
 
     public void render(Texture srcTexture, float filterRadius) {
 
-        //Process: 1. Extract the brightest fragments in 'srcTexture', discard all fragments below some threshold, BLOOM_INTENSITY.
-        this.extractBrightFrags(srcTexture);
-        Texture sceneBrightFrags = this.extractBrightFramebuffer.getColorAttachment();
+        //Process: 1. Extract the brightest fragments in 'srcTexture', discard all fragments below some threshold.
+        //might be able to skip/combine this step in the shader it is needed?
+        _extractBrightFrags(srcTexture);
+        Texture sceneBrightFrags = this.utilityFramebuffer.getColorAttachment();
 
+        //Process: 2. Bloom
         this.bloomFramebuffer.bind();
-        renderDownsamples(sceneBrightFrags);
-        renderUpsamples(filterRadius);
+        _downsampleMips(sceneBrightFrags);
+        _upsampleMips(filterRadius);
         this.bloomFramebuffer.unbind();
     }
 
-    private void extractBrightFrags(Texture srcTexture){
-        this.extractBrightFramebuffer.bind();
+    private void _extractBrightFrags(Texture srcTexture){
 
-        srcTexture.bind();
+        this.utilityFramebuffer.bind();
+
         this.extractBrightFragsShader.bind();
+        srcTexture.bind();
         this.extractBrightFragsShader.uploadIntUniform("srcTexture", srcTexture.getBindLocation());
-        this.renderQuad();
+        _renderQuad();
         this.extractBrightFragsShader.unbind();
         srcTexture.unbind();
 
-        this.extractBrightFramebuffer.unbind();
+        this.utilityFramebuffer.unbind();
     }
-
-    private void renderDownsamples(Texture texture) {
+    private void _downsampleMips(Texture texture) {
 
         ArrayList<Mip> mipChain = this.bloomFramebuffer.getMipChain();
 
@@ -95,7 +104,7 @@ public class BloomRenderer {
             glViewport(0, 0, (int) mip.size.x, (int) mip.size.y);
 
             // Render screen-filled quad of resolution of current mip
-            this.renderQuad();
+            _renderQuad();
 
             // Set current mip resolution as srcResolution for next iteration
             this.downsampleShader.uploadVec2fUniform("srcResolution", mip.size);
@@ -105,20 +114,16 @@ public class BloomRenderer {
             mip.texture.bind();
         }
 
+        //----------------Might reduce performance / speed ?
+        texture.unbind();
+        for(Mip mip : mipChain)
+            mip.texture.unbind();
+
         this.downsampleShader.unbind();
     }
-
-    private void renderUpsamples(float filterRadius) {
+    private void _upsampleMips(float filterRadius) {
 
         ArrayList<Mip> mipChain = this.bloomFramebuffer.getMipChain();
-
-        // Enable additive blending
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glBlendEquation(GL_FUNC_ADD);
-
-        this.upsampleShader.bind();
-        this.upsampleShader.uploadFloatUniform("filterRadius", filterRadius);
 
         //Smallest ---> Biggest, Mip Level.
         for (int i = mipChain.size() - 1; i > 0 ; i--) {
@@ -126,41 +131,50 @@ public class BloomRenderer {
             Mip mip = mipChain.get(i);
             Mip nextMip = mipChain.get(i - 1);
 
-            // Bind viewport and texture from where to read
-            mip.texture.bind();
+            //blur mip
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mip.texture.getId(), 0);
+            int amount = 3;
+            this.gaussianBlurShader.bind();
+            for (int idx = 0; idx < amount; idx++) {
+                for(int iteration = 0; iteration < 2; iteration++) {    //make sure to bloom both vertically and horizontally hehe
 
-            // Set framebuffer render target (we write to this texture)
+                    mip.texture.bind();
+                    this.gaussianBlurShader.uploadIntUniform("srcTexture", mip.texture.getBindLocation());
+                    this.gaussianBlurShader.uploadIntUniform("horizontal", iteration);
+                    glViewport(0, 0, (int) mip.size.x, (int) mip.size.y);
+                    _renderQuad();
+                    mip.texture.unbind();
+                }
+            }
+            this.gaussianBlurShader.unbind();
+
+            // up-sample and blend mip
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, nextMip.texture.getId(), 0);
-            glViewport(0, 0, (int) nextMip.size.x, (int) nextMip.size.y);
-
+            this.upsampleShader.bind();
+            this.upsampleShader.uploadFloatUniform("filterRadius", filterRadius);
+            mip.texture.bind();
             this.upsampleShader.uploadIntUniform("srcTexture", mip.texture.getBindLocation());
-
-            // Render screen-filled quad of resolution of current mip
-            this.renderQuad();
+            glViewport(0, 0, (int) nextMip.size.x, (int) nextMip.size.y);
+            glEnable(GL_BLEND);             // Enable additive blending
+            glBlendFunc(GL_ONE, GL_ONE);
+            glBlendEquation(GL_FUNC_ADD);
+            _renderQuad();
+            glDisable(GL_BLEND);           // Disable additive blending
 
             mip.texture.unbind();
+            this.upsampleShader.unbind();
         }
-
-        // Disable additive blending
-        glDisable(GL_BLEND);
-
-        this.upsampleShader.unbind();
     }
-
-    public Texture bloomTexture() {
-        return this.bloomFramebuffer.getMipChain().get(0).texture;
-    }
-
-    private void renderQuad() {
+    private void _renderQuad() {
         if (this.vao == 0) {
             this.vao = glGenVertexArrays();
             glBindVertexArray(this.vao);
 
             float[] quadVertices = {
-                     1.0f,  1.0f,   1.0f, 1.0f,
+                    1.0f,  1.0f,   1.0f, 1.0f,
                     -1.0f,  1.0f,   0.0f, 1.0f,
                     -1.0f, -1.0f,   0.0f, 0.0f,
-                     1.0f, -1.0f,   1.0f, 0.0f
+                    1.0f, -1.0f,   1.0f, 0.0f
             };
             FloatBuffer vertBuffer = MemoryUtil.memAllocFloat(quadVertices.length);
             vertBuffer.put(quadVertices).flip();
@@ -198,10 +212,20 @@ public class BloomRenderer {
         glBindVertexArray(0);
     }
 
+    public Texture getTexture() {
+        return this.bloomFramebuffer.getMipChain().get(0).texture;
+    }
+    public Texture brightFragments() {
+        return this.utilityFramebuffer.getColorAttachment();
+    }
+
     public void dispose() {
         glDeleteVertexArrays(this.vao);
-        this.bloomFramebuffer.dispose();
+        this.extractBrightFragsShader.dispose();
         this.downsampleShader.dispose();
         this.upsampleShader.dispose();
+        this.gaussianBlurShader.dispose();
+        this.bloomFramebuffer.dispose();
+        this.utilityFramebuffer.dispose();
     }
 }

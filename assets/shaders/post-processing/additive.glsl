@@ -1,14 +1,15 @@
 #version 440 core
 
 in vec2 fTextCoords;
-out vec4 color;
+layout(location = 0) out vec3 color;
 
 uniform sampler2D mipTexture;
 uniform sampler2D mipTexture01;
 
 void main(){
-    vec4 hdrCol = texture(mipTexture, fTextCoords);
-    hdrCol += texture(mipTexture01, fTextCoords);
+
+    vec3 hdrCol = texture(mipTexture, fTextCoords).rgb;
+         hdrCol += texture(mipTexture01, fTextCoords).rgb;
 
     color = hdrCol;
 }

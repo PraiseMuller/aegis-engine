@@ -5,11 +5,12 @@ import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
-import static core.utils.SETTINGS.BLACK;
+import static core.utils.SETTINGS.*;
 import static org.lwjgl.opengl.GL30.*;
 
 public class BloomFramebuffer {
-    private int fbo;
+
+    private final int fbo;
     private final ArrayList<Mip> mipChain;
 
     public BloomFramebuffer(int windowWidth, int windowHeight, int mipChainLength){
@@ -21,11 +22,10 @@ public class BloomFramebuffer {
 
             Mip mip = new Mip();
             mipSize.mul(0.5f);
-            mip.size = new Vector2f(mipSize);
-            mip.texture = new Texture((int)mip.size.x, (int)mip.size.y, 1, true);
+            mip.size = new Vector2f(mipSize.x, mipSize.y);
+            mip.texture = new Texture( (int) mip.size.x, (int) mip.size.y, 1, true);
 
             this.mipChain.add(mip);
-            //this.mipChain.add(0, mip);
         }
 
         this.fbo = glGenFramebuffers();
@@ -45,10 +45,13 @@ public class BloomFramebuffer {
     }
 
     public void bind(){
+
+        glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
+
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, this.fbo);
+        glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
         glClearColor(BLACK.x, BLACK.y, BLACK.z, BLACK.w);
         glClear(GL_COLOR_BUFFER_BIT);
     }

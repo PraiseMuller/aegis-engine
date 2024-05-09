@@ -10,7 +10,7 @@ uniform sampler2D srcTexture;
 uniform float filterRadius;
 
 in vec2 fTextCoords;
-layout (location = 0) out vec4 upsample;
+layout (location = 0) out vec3 upsample;
 
 void main()
 {
@@ -24,17 +24,17 @@ void main()
     // d - e - f
     // g - h - i
     // === ('e' is the current texel) ===
-    vec4 a = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y + y));
-    vec4 b = texture(srcTexture, vec2(fTextCoords.x,     fTextCoords.y + y));
-    vec4 c = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y + y));
+    vec3 a = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y + y)).rgb;
+    vec3 b = texture(srcTexture, vec2(fTextCoords.x,     fTextCoords.y + y)).rgb;
+    vec3 c = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y + y)).rgb;
 
-    vec4 d = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y));
-    vec4 e = texture(srcTexture, vec2(fTextCoords.x,     fTextCoords.y));
-    vec4 f = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y));
+    vec3 d = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y)).rgb;
+    vec3 e = texture(srcTexture, vec2(fTextCoords.x,     fTextCoords.y)).rgb;
+    vec3 f = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y)).rgb;
 
-    vec4 g = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y - y));
-    vec4 h = texture(srcTexture, vec2(fTextCoords.x,     fTextCoords.y - y));
-    vec4 i = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y - y));
+    vec3 g = texture(srcTexture, vec2(fTextCoords.x - x, fTextCoords.y - y)).rgb;
+    vec3 h = texture(srcTexture, vec2(fTextCoords.x,     fTextCoords.y - y)).rgb;
+    vec3 i = texture(srcTexture, vec2(fTextCoords.x + x, fTextCoords.y - y)).rgb;
 
     // Apply weighted distribution, by using a 3x3 tent filter:
     //  1   | 1 2 1 |

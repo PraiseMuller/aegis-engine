@@ -4,17 +4,17 @@ import core.engine.Camera;
 import core.engine.Scene;
 import core.entities.GameObject;
 import core.inputs.Input;
-import core.renderer.ImGuiLayer;
-import core.renderer.LightsRenderer;
-import core.renderer.Renderer;
-import core.renderer.Window;
+import core.renderer.*;
+import core.renderer.environment.CubeMap;
 import core.utils.AssetPool;
+import core.utils.Time;
 
 import java.util.ArrayList;
 
 import static core.utils.SETTINGS.*;
 
 public class Scene3D extends Scene {
+
     private ArrayList<GameObject> gameObjects = null;
     private LightsRenderer lightsRenderer = null;
     private ImGuiLayer imGuiLayer = null;
@@ -26,12 +26,14 @@ public class Scene3D extends Scene {
 
     @Override
     public void init() {
-        this.sceneRenderer = new Renderer(this);
+
         this.camera = new Camera3D(FOV, WIN_WIDTH, WIN_HEIGHT, Z_NEAR, Z_FAR);
-        this.lightsRenderer = new LightsRenderer();
 
         this.imGuiLayer = new ImGuiLayer(Window.getWindow());
         this.imGuiLayer.initImGui();
+
+        this.sceneRenderer = new Renderer();
+        this.lightsRenderer = new LightsRenderer();
 
         //INITIALIZE AND ADD GAME-OBJECTS TO SCENE
         this.gameObjects = new ArrayList<>();
@@ -46,9 +48,10 @@ public class Scene3D extends Scene {
     @Override
     public void update(float dt) {
 
-//        float x = (float) Math.cos(Time.get() + dt);
-//        float y = (float) Math.sin(Time.get() + dt);
-//        this.camera.movePosition(x, y, 0.0f);
+//        float x = (float) Math.cos(Time.get()) * dt * 5.0f;
+        float y = (float) Math.cos(Time.get()) * dt * 5.0f;
+//        float z = (float) Math.cos(Time.get()) * dt * 5.0f;
+        this.camera.movePosition(0, y, 0);
 
         for (GameObject gameObject : this.gameObjects){
             gameObject.update(dt);
@@ -58,9 +61,9 @@ public class Scene3D extends Scene {
     @Override
     public void render(float dt) {
 
-        //FIND A WAY TO BATCH TOGETHER ALL THE VERTICES IN A SCENE AND SEND THIS TO THE RENDERER
-        this.sceneRenderer.render(this, this.lightsRenderer, dt);
-        imGuiLayer.render(dt, this);
+        //Find a way to batch all vertices and send these to the renderer instead.
+        this.sceneRenderer.render(this);
+        imGuiLayer.render(this, dt);
     }
 
     @Override
